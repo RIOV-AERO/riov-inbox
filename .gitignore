@@ -1,0 +1,16 @@
+# .env.local — not committed
+.env.local
+.env*.local
+
+# Next.js
+.next/
+out/
+
+# Node
+node_modules/
+
+# TypeScript
+*.tsbuildinfo
+
+# Prisma generated client
+lib/generated/
