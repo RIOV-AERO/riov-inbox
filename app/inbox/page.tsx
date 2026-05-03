@@ -41,6 +41,17 @@ export default async function InboxPage() {
         <span className="text-xs text-zinc-500">riov</span>
       </header>
 
+      {/* webhook status — links to /api/health for full detail */}
+      <a
+        href="/api/health"
+        target="_blank"
+        rel="noreferrer"
+        className="mb-5 flex w-fit items-center gap-1.5 text-xs text-zinc-600 hover:text-zinc-400"
+      >
+        <span className="h-1.5 w-1.5 rounded-full bg-rio-green" />
+        webhook ativo · inbox.riov.com.br/api/webhooks/resend
+      </a>
+
       {emails.length === 0 ? (
         <p className="text-sm text-zinc-500">nenhum email recebido ainda.</p>
       ) : (
