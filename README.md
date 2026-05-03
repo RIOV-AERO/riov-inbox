@@ -5,10 +5,10 @@ Email inbox for Riov. Receives inbound emails via Resend webhook and displays th
 ```mermaid
 graph LR
     A[email arrives] --> B[Resend]
-    B -->|POST inbound.email| C[/api/webhooks/resend]
+    B -->|POST email.received| C["/api/webhooks/resend"]
     C --> D[(Prisma Postgres)]
-    D --> E[/inbox]
-    E --> F[/inbox/:id]
+    D --> E["/inbox"]
+    E --> F["/inbox/:id"]
 ```
 
 ## run
