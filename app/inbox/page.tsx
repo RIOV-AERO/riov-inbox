@@ -38,7 +38,15 @@ export default async function InboxPage() {
             </span>
           )}
         </div>
-        <span className="text-xs text-zinc-500">riov</span>
+        <div className="flex items-center gap-3">
+          <span className="text-xs text-zinc-500">riov</span>
+          <Link
+            href="/send"
+            className="rounded border border-zinc-700 px-3 py-1 text-xs hover:border-rio-green hover:text-rio-green"
+          >
+            + novo
+          </Link>
+        </div>
       </header>
 
       {/* webhook status — links to /api/health for full detail */}
