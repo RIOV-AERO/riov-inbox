@@ -7,6 +7,7 @@ import { defineConfig } from "prisma/config";
 export default defineConfig({
   schema: "prisma/schema.prisma",
   datasource: {
-    url: process.env.DATABASE_URL!,
+    // Use ?? "" so `prisma generate` (which doesn't need the DB) works in CI/deployment
+    url: process.env.DATABASE_URL ?? "",
   },
 });
