@@ -16,7 +16,11 @@ if (!API_KEY) {
 
 const BASE = "https://api.resend.com";
 
-async function req<T>(method: string, path: string, body?: unknown): Promise<T> {
+async function req<T>(
+  method: string,
+  path: string,
+  body?: unknown,
+): Promise<T> {
   const res = await fetch(`${BASE}${path}`, {
     method,
     headers: {
@@ -44,7 +48,10 @@ async function main() {
     }
 
     case "get": {
-      if (!id) { console.error("Usage: pnpm webhooks:get <id>"); process.exit(1); }
+      if (!id) {
+        console.error("Usage: pnpm webhooks:get <id>");
+        process.exit(1);
+      }
       const data = await req("GET", `/webhooks/${id}`);
       console.log(JSON.stringify(data, null, 2));
       break;
@@ -60,7 +67,10 @@ async function main() {
     }
 
     case "update": {
-      if (!id) { console.error("Usage: pnpm webhooks:update <id>"); process.exit(1); }
+      if (!id) {
+        console.error("Usage: pnpm webhooks:update <id>");
+        process.exit(1);
+      }
       const data = await req("PATCH", `/webhooks/${id}`, {
         events: ["email.received"],
       });
@@ -69,7 +79,10 @@ async function main() {
     }
 
     case "delete": {
-      if (!id) { console.error("Usage: pnpm webhooks:delete <id>"); process.exit(1); }
+      if (!id) {
+        console.error("Usage: pnpm webhooks:delete <id>");
+        process.exit(1);
+      }
       await req("DELETE", `/webhooks/${id}`);
       console.log(`Deleted ${id}`);
       break;
