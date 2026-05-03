@@ -30,7 +30,7 @@ export default async function InboxPage() {
   return (
     <main className="mx-auto max-w-5xl p-6 font-mono">
       <header className="mb-6 flex items-center justify-between border-b border-zinc-800 pb-3">
-        <div className="flex items-center gap-3">
+        <div className=" flex items-center gap-3">
           <h1 className="text-2xl font-bold">inbox</h1>
           {unreadCount > 0 && (
             <span className="rounded bg-rio-green/20 px-2 py-0.5 text-xs text-rio-green">
