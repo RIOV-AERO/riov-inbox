@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "invalid json" }, { status: 400 });
   }
 
-  if (event.type !== "inbound.email") {
+  if (event.type !== "email.received") {
     return NextResponse.json({ received: true });
   }
 

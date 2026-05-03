@@ -35,36 +35,49 @@ async function req<T>(method: string, path: string, body?: unknown): Promise<T> 
 
 const [, , cmd, id] = process.argv;
 
-switch (cmd) {
-  case "list": {
-    const data = await req<{ data: unknown[] }>("GET", "/webhooks");
-    console.log(JSON.stringify(data, null, 2));
-    break;
-  }
+async function main() {
+  switch (cmd) {
+    case "list": {
+      const data = await req<{ data: unknown[] }>("GET", "/webhooks");
+      console.log(JSON.stringify(data, null, 2));
+      break;
+    }
 
-  case "get": {
-    if (!id) { console.error("Usage: pnpm webhooks:get <id>"); process.exit(1); }
-    const data = await req("GET", `/webhooks/${id}`);
-    console.log(JSON.stringify(data, null, 2));
-    break;
-  }
+    case "get": {
+      if (!id) { console.error("Usage: pnpm webhooks:get <id>"); process.exit(1); }
+      const data = await req("GET", `/webhooks/${id}`);
+      console.log(JSON.stringify(data, null, 2));
+      break;
+    }
 
-  case "create": {
-    const data = await req("POST", "/webhooks", {
-      url: "https://inbox.riov.com.br/api/webhooks/resend",
-      events: ["inbound.email"],
-    });
-    console.log(JSON.stringify(data, null, 2));
-    break;
-  }
+    case "create": {
+      const data = await req("POST", "/webhooks", {
+        url: "https://inbox.riov.com.br/api/webhooks/resend",
+        events: ["email.received"],
+      });
+      console.log(JSON.stringify(data, null, 2));
+      break;
+    }
 
-  case "delete": {
-    if (!id) { console.error("Usage: pnpm webhooks:delete <id>"); process.exit(1); }
-    await req("DELETE", `/webhooks/${id}`);
-    console.log(`Deleted ${id}`);
-    break;
-  }
+    case "update": {
+      if (!id) { console.error("Usage: pnpm webhooks:update <id>"); process.exit(1); }
+      const data = await req("PATCH", `/webhooks/${id}`, {
+        events: ["email.received"],
+      });
+      console.log(JSON.stringify(data, null, 2));
+      break;
+    }
 
-  default:
-    console.log("Commands: list | get <id> | create | delete <id>");
+    case "delete": {
+      if (!id) { console.error("Usage: pnpm webhooks:delete <id>"); process.exit(1); }
+      await req("DELETE", `/webhooks/${id}`);
+      console.log(`Deleted ${id}`);
+      break;
+    }
+
+    default:
+      console.log("Commands: list | get <id> | create | delete <id>");
+  }
 }
+
+main();

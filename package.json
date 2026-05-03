@@ -14,6 +14,7 @@
     "webhooks:list": "tsx scripts/webhooks.ts list",
     "webhooks:get": "tsx scripts/webhooks.ts get",
     "webhooks:create": "tsx scripts/webhooks.ts create",
+    "webhooks:update": "tsx scripts/webhooks.ts update",
     "webhooks:delete": "tsx scripts/webhooks.ts delete"
   },
   "dependencies": {
