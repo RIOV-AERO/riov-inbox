@@ -8,8 +8,6 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "deploy": "opennextjs-cloudflare build && opennextjs-cloudflare deploy",
-    "preview": "opennextjs-cloudflare build && opennextjs-cloudflare preview",
     "db:push": "prisma db push",
     "db:generate": "prisma generate",
     "db:studio": "prisma studio",
@@ -30,14 +28,12 @@
     "lucide-react": "^1.27.0",
     "next": "^16.2.4",
     "pg": "^8.20.0",
-    "pg-cloudflare": "^1.3.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "svix": "latest",
     "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@opennextjs/cloudflare": "^1.19.5",
     "@tailwindcss/postcss": "^4.2.0",
     "@types/node": "^22.0.0",
     "@types/pg": "^8.20.0",
@@ -46,8 +42,7 @@
     "prisma": "latest",
     "tailwindcss": "^4.2.0",
     "tsx": "^4.21.0",
-    "typescript": "^5.6.0",
-    "wrangler": "^4.87.0"
+    "typescript": "^5.6.0"
   },
   "packageManager": "pnpm@10.33.2",
   "pnpm": {
@@ -55,8 +50,7 @@
       "@prisma/engines",
       "esbuild",
       "prisma",
-      "sharp",
-      "workerd"
+      "sharp"
     ]
   }
 }

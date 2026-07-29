@@ -15,8 +15,3 @@ node_modules/
 # Prisma generated client
 lib/generated/
 
-# OpenNext / Wrangler build outputs
-.open-next/
-.wrangler/
-.dev.vars
-

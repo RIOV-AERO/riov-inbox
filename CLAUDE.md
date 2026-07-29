@@ -78,7 +78,7 @@ riov-inbox/
 
 Fully custom — no third-party auth library.
 
-- **Password hashing:** `bcryptjs` (pure JS — works under both Node and the Cloudflare Workers runtime this app deploys to; native `bcrypt` bindings would not).
+- **Password hashing:** `bcryptjs` (pure JS — works across different JS runtimes; native `bcrypt` bindings would not).
 - **Session token:** a single JWT (HS256, signed with `jose`, secret = `AUTH_SECRET`) stored in an httpOnly `riov_session` cookie, 30-day expiry. Claims: `sub` (user id), `sid` (Session row id), `email`, `name`.
 - **Revocation:** each login creates a `Session` row. `lib/auth/session.ts#getCurrentUser()` verifies the JWT signature _and_ confirms the `Session` row still exists — this is what makes logout actually take effect before the JWT's own expiry, not just signature/exp checks.
 - **`proxy.ts`** (Next's renamed middleware convention) does a fast, stateless check — signature + expiry only, no DB — to redirect unauthenticated requests to `/login`. The authoritative, DB-backed check lives in `requireUser()` / `getCurrentUser()`, used by `app/(app)/layout.tsx` and every server action that mutates data.

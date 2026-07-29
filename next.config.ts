@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  serverExternalPackages: ["@prisma/client", ".prisma/client", "pg", "pg-cloudflare"],
+  serverExternalPackages: ["@prisma/client", ".prisma/client", "pg"],
   experimental: {
     serverActions: {
       // Compose attachments are uploaded straight through the send server
@@ -12,6 +12,3 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
-
-import { initOpenNextCloudflareForDev } from "@opennextjs/cloudflare";
-initOpenNextCloudflareForDev();
