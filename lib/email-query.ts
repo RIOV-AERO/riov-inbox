@@ -1,0 +1,48 @@
+import { Prisma } from "@/lib/generated/prisma/client/client";
+
+export interface EmailFilters {
+  q?: string;
+  filter?: string;
+  label?: string;
+}
+
+/** Merges the folder-specific scope (inbox/sent/archived/trash) with the
+ * shared search bar + filter chip query params. */
+export function buildEmailWhere(
+  scope: Prisma.EmailWhereInput,
+  filters: EmailFilters,
+): Prisma.EmailWhereInput {
+  const where: Prisma.EmailWhereInput = { ...scope };
+
+  if (filters.filter === "unread") where.read = false;
+  if (filters.filter === "attachments") where.attachments = { some: {} };
+  if (filters.label) where.labels = { some: { slug: filters.label } };
+
+  if (filters.q) {
+    where.OR = [
+      { subject: { contains: filters.q, mode: "insensitive" } },
+      { from: { contains: filters.q, mode: "insensitive" } },
+      { text: { contains: filters.q, mode: "insensitive" } },
+    ];
+  }
+
+  return where;
+}
+
+export const EMAIL_LIST_SELECT = {
+  id: true,
+  from: true,
+  to: true,
+  subject: true,
+  text: true,
+  read: true,
+  archived: true,
+  deletedAt: true,
+  receivedAt: true,
+  labels: { select: { id: true, slug: true, name: true, color: true } },
+  _count: { select: { attachments: true } },
+} satisfies Prisma.EmailSelect;
+
+export type EmailListItem = Prisma.EmailGetPayload<{
+  select: typeof EMAIL_LIST_SELECT;
+}>;

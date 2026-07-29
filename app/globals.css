@@ -1,16 +1,69 @@
 @import "tailwindcss";
 
 @theme {
-  --color-rio-green: oklch(0.55 0.15 145);
-  --color-rio-bg: oklch(0.16 0.02 240);
-  --color-rio-fg: oklch(0.96 0.01 240);
+  /* Surfaces */
+  --color-page: #f7f6f3;
+  --color-surface: #ffffff;
+  --color-frame: #f2f1ec;
+
+  /* Text */
+  --color-ink: #17201c;
+  --color-ink-secondary: #6b7671;
+  --color-ink-muted: #8a948e;
+  --color-ink-faint: #b4bbb6;
+
+  /* Borders */
+  --color-border: #e7e4de;
+  --color-border-strong: #e0dcd4;
+  --color-border-subtle: #f0eee9;
+  --color-border-faint: #f3f1ec;
+
+  /* Accent — green, used only for CTAs / unread / focus */
+  --color-accent: #00a86b;
+  --color-accent-hover: #00875a;
+  --color-accent-deep: #00694a;
+  --color-accent-tint: #e6f6ef;
+  --color-accent-tint-border: #bfe8d6;
+
+  /* Danger */
+  --color-danger: #b4402f;
+  --color-danger-border: #f2dad5;
+  --color-danger-tint: #fdf4f2;
+
+  /* Misc label / avatar accents */
+  --color-warning: #e8a33d;
+  --color-info: #7a8cf0;
+
   --font-sans:
-    ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+    var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+    Roboto, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, "Roboto Mono", monospace;
+
+  --radius-riov-sm: 8px;
+  --radius-riov-md: 12px;
+  --radius-riov-lg: 14px;
+  --radius-riov-xl: 20px;
+
+  --shadow-riov-card: 0 12px 40px rgba(30, 40, 35, 0.1);
+  --shadow-riov-float: 0 -4px 40px rgba(30, 40, 35, 0.14);
+  --shadow-riov-toast: 0 8px 28px rgba(23, 32, 28, 0.24);
+  --shadow-riov-cta: 0 2px 10px rgba(0, 168, 107, 0.28);
+
+  --animate-riov-spin: riov-spin 0.9s linear infinite;
+
+  @keyframes riov-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
 }
 
 html,
 body {
-  background: var(--color-rio-bg);
-  color: var(--color-rio-fg);
+  background: var(--color-page);
+  color: var(--color-ink);
+}
+
+* {
+  scrollbar-color: var(--color-border-strong) transparent;
 }

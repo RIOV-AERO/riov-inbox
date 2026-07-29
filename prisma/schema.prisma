@@ -7,15 +7,78 @@ datasource db {
     provider = "postgresql"
 }
 
+enum EmailDirection {
+    INBOUND
+    OUTBOUND
+}
+
+enum ListDensity {
+    COMPACT
+    COMFORTABLE
+    SPACIOUS
+}
+
+model User {
+    id                   String      @id @default(cuid())
+    email                String      @unique
+    passwordHash         String
+    name                 String
+    density              ListDensity @default(COMFORTABLE)
+    loadExternalImages   Boolean     @default(true)
+    desktopNotifications Boolean     @default(false)
+    signature            String?
+    createdAt            DateTime    @default(now())
+    updatedAt            DateTime    @updatedAt
+    sessions             Session[]
+}
+
+// Refresh-token store — lets us revoke a single session (logout) or all
+// sessions for a user without waiting for JWT expiry.
+model Session {
+    id             String   @id @default(cuid())
+    userId         String
+    user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    refreshTokenHash String @unique
+    expiresAt      DateTime
+    createdAt      DateTime @default(now())
+}
+
+model Label {
+    id     String  @id @default(cuid())
+    slug   String  @unique
+    name   String
+    color  String
+    emails Email[]
+}
+
 model Email {
-    id         String   @id @default(cuid())
-    messageId  String?  @unique
-    from       String
-    to         String
-    subject    String
-    html       String?
-    text       String?
-    read       Boolean  @default(false)
-    receivedAt DateTime @default(now())
-    createdAt  DateTime @default(now())
+    id          String         @id @default(cuid())
+    messageId   String?        @unique
+    direction   EmailDirection @default(INBOUND)
+    from        String
+    to          String
+    subject     String
+    html        String?
+    text        String?
+    read        Boolean        @default(false)
+    archived    Boolean        @default(false)
+    deletedAt   DateTime?
+    receivedAt  DateTime       @default(now())
+    createdAt   DateTime       @default(now())
+    attachments Attachment[]
+    labels      Label[]
+
+    @@index([archived, deletedAt, receivedAt])
+}
+
+model Attachment {
+    id          String   @id @default(cuid())
+    emailId     String
+    email       Email    @relation(fields: [emailId], references: [id], onDelete: Cascade)
+    filename    String
+    contentType String
+    size        Int
+    content     Bytes // Stores the actual blob file
+    url         String? // Original download URL from Resend
+    createdAt   DateTime @default(now())
 }

@@ -72,7 +72,7 @@ export default function ComposeForm() {
         disabled={pending}
         className="self-end rounded border border-rio-green px-5 py-2 text-sm hover:bg-rio-green hover:text-zinc-900 disabled:opacity-50"
       >
-        {pending ? "enviando…" : "enviar"}
+        {pending ? "enviando..." : "enviar"}
       </button>
     </form>
   );
