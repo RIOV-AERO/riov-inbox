@@ -135,7 +135,7 @@ export default async function EmailDetailPage({
           </div>
         ) : email.text ? (
           <div className="rounded-riov-xl border border-border bg-surface p-7">
-            <pre className="max-w-[68ch] font-sans text-[15.5px] leading-relaxed break-words whitespace-pre-wrap text-[#26302B]">
+            <pre className="max-w-[68ch] font-sans text-[15.5px] leading-relaxed wrap-break-word whitespace-pre-wrap text-[#26302B]">
               {email.text}
             </pre>
           </div>
