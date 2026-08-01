@@ -193,6 +193,7 @@ export default async function EmailDetailPage({
             emailId={email.id}
             senderEmail={senderEmail}
             subject={email.subject}
+            className="-mx-5 px-5 md:-mx-7 md:px-7"
           />
         )}
       </div>

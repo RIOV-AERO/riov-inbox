@@ -29,6 +29,9 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
           overflow-wrap: break-word !important;
           box-sizing: border-box !important;
         }
+        table, tr, td, div, section, main, article {
+          max-height: none !important;
+        }
         img {
           max-width: 100% !important;
           height: auto !important;
@@ -72,15 +75,21 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
 
         docEl.style.setProperty("height", "auto", "important");
         docEl.style.setProperty("min-height", "0px", "important");
+        docEl.style.setProperty("overflow-y", "visible", "important");
+
         body.style.setProperty("height", "auto", "important");
         body.style.setProperty("min-height", "0px", "important");
+        body.style.setProperty("overflow-y", "visible", "important");
 
-        let maxChildBottom = 0;
-        const children = body.querySelectorAll("*");
-        for (let i = 0; i < children.length; i++) {
-          const rect = children[i].getBoundingClientRect();
-          if (rect.bottom > maxChildBottom) {
-            maxChildBottom = rect.bottom;
+        let maxContentBottom = 0;
+        const allChildren = body.getElementsByTagName("*");
+        for (let i = 0; i < allChildren.length; i++) {
+          const el = allChildren[i] as HTMLElement;
+          if (el.offsetTop !== undefined && el.offsetHeight !== undefined) {
+            const bottom = el.offsetTop + el.offsetHeight;
+            if (bottom > maxContentBottom) {
+              maxContentBottom = bottom;
+            }
           }
         }
 
@@ -89,11 +98,11 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
           body.offsetHeight,
           docEl.scrollHeight,
           docEl.offsetHeight,
-          Math.ceil(maxChildBottom),
+          maxContentBottom,
         );
 
         if (contentHeight > 0) {
-          setHeight(contentHeight + 32);
+          setHeight(contentHeight + 24);
         }
       } catch {
         // Fallback if cross-origin or measurement issue occurs
@@ -104,13 +113,19 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
     let touchStartX = 0;
     let initialScrollTop = 0;
 
+    const getParentScrollContainer = (): HTMLElement | null => {
+      if (!iframe) return null;
+      return (
+        iframe.closest(".overflow-y-auto") ||
+        ((iframe.ownerDocument?.querySelector(".overflow-y-auto") as HTMLElement) || null)
+      );
+    };
+
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length === 1) {
         touchStartY = e.touches[0].clientY;
         touchStartX = e.touches[0].clientX;
-        const container = iframe.closest(
-          ".overflow-y-auto",
-        ) as HTMLElement | null;
+        const container = getParentScrollContainer();
         if (container) {
           initialScrollTop = container.scrollTop;
         }
@@ -126,9 +141,7 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
       const deltaX = touchStartX - currentX;
 
       if (Math.abs(deltaY) > Math.abs(deltaX)) {
-        const container = iframe.closest(
-          ".overflow-y-auto",
-        ) as HTMLElement | null;
+        const container = getParentScrollContainer();
         if (container) {
           container.scrollTop = initialScrollTop + deltaY;
         }
