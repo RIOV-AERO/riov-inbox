@@ -45,12 +45,12 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
 
     let result = html;
 
-    if (result.includes("</head>")) {
+    if (result.includes("</body>")) {
+      result = result.replace("</body>", `${resetStyles}</body>`);
+    } else if (result.includes("</html>")) {
+      result = result.replace("</html>", `${resetStyles}</html>`);
+    } else if (result.includes("</head>")) {
       result = result.replace("</head>", `${resetStyles}</head>`);
-    } else if (result.includes("<head>")) {
-      result = result.replace("<head>", `<head>${resetStyles}`);
-    } else if (result.includes("<html")) {
-      result = result.replace(/<html[^>]*>/, `$&<head>${resetStyles}</head>`);
     } else {
       result = `<!DOCTYPE html><html><head>${resetStyles}</head><body>${result}</body></html>`;
     }
@@ -75,10 +75,12 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
 
         docEl.style.setProperty("height", "auto", "important");
         docEl.style.setProperty("min-height", "0px", "important");
+        docEl.style.setProperty("max-height", "none", "important");
         docEl.style.setProperty("overflow-y", "visible", "important");
 
         body.style.setProperty("height", "auto", "important");
         body.style.setProperty("min-height", "0px", "important");
+        body.style.setProperty("max-height", "none", "important");
         body.style.setProperty("overflow-y", "visible", "important");
 
         let maxContentBottom = 0;
@@ -148,6 +150,16 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
       }
     };
 
+    const handleWheel = (e: WheelEvent) => {
+      const container = getParentScrollContainer();
+      if (container) {
+        let dy = e.deltaY;
+        if (e.deltaMode === 1) dy *= 16;
+        else if (e.deltaMode === 2) dy *= window.innerHeight;
+        container.scrollTop += dy;
+      }
+    };
+
     const setupDocListeners = () => {
       updateHeight();
 
@@ -157,8 +169,11 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
 
         doc.removeEventListener("touchstart", handleTouchStart);
         doc.removeEventListener("touchmove", handleTouchMove);
+        doc.removeEventListener("wheel", handleWheel);
+
         doc.addEventListener("touchstart", handleTouchStart, { passive: true });
         doc.addEventListener("touchmove", handleTouchMove, { passive: true });
+        doc.addEventListener("wheel", handleWheel, { passive: true });
 
         if (typeof ResizeObserver !== "undefined") {
           if (resizeObserver) resizeObserver.disconnect();
@@ -213,6 +228,7 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
         if (doc) {
           doc.removeEventListener("touchstart", handleTouchStart);
           doc.removeEventListener("touchmove", handleTouchMove);
+          doc.removeEventListener("wheel", handleWheel);
         }
       } catch {}
     };
