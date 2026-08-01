@@ -22,7 +22,7 @@ export function AttachmentCard({
       className="flex items-center gap-3.5 rounded-riov-lg border border-border-subtle bg-[#FCFCFA] px-4 py-3.5 transition-colors hover:border-border-strong"
     >
       <div
-        className="flex size-11 shrink-0 items-center justify-center rounded-3.25 text-[11px] font-bold"
+        className="flex size-11 shrink-0 items-center justify-center rounded-riov-md text-[11px] font-bold"
         style={{ background: badge.bg, color: badge.fg }}
       >
         {badge.label}

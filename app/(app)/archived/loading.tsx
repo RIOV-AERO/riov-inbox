@@ -5,10 +5,10 @@ function SkeletonRow({ dimmed = false }: { dimmed?: boolean }) {
     >
       <div className="size-9 shrink-0 animate-pulse rounded-riov-md bg-frame" />
       <div className="flex flex-1 flex-col gap-2">
-        <div className="h-2.25 w-40 animate-pulse rounded-1.25 bg-frame" />
-        <div className="h-2.75 w-72 animate-pulse rounded-1.25 bg-border-subtle" />
+        <div className="h-2.25 w-40 animate-pulse rounded-full bg-frame" />
+        <div className="h-2.75 w-72 animate-pulse rounded-full bg-border-subtle" />
       </div>
-      <div className="h-2.25 w-9 shrink-0 animate-pulse rounded-1.25 bg-frame" />
+      <div className="h-2.25 w-9 shrink-0 animate-pulse rounded-full bg-frame" />
     </div>
   );
 }

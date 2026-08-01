@@ -41,7 +41,10 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
       return html.replace("<head>", `<head>${resetStylesAndBase}`);
     }
     if (html.includes("<html")) {
-      return html.replace(/<html[^>]*>/, `$&<head>${resetStylesAndBase}</head>`);
+      return html.replace(
+        /<html[^>]*>/,
+        `$&<head>${resetStylesAndBase}</head>`,
+      );
     }
     return `<!DOCTYPE html><html><head>${resetStylesAndBase}</head><body>${html}</body></html>`;
   }, [html]);
@@ -65,7 +68,7 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
             body?.offsetHeight ?? 0,
             docEl?.clientHeight ?? 0,
             docEl?.scrollHeight ?? 0,
-            docEl?.offsetHeight ?? 0
+            docEl?.offsetHeight ?? 0,
           );
           if (contentHeight > 0) {
             setHeight(contentHeight + 16);
@@ -105,7 +108,7 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
     updateHeight();
 
     const timeouts = [100, 300, 600, 1200, 2500].map((delay) =>
-      setTimeout(updateHeight, delay)
+      setTimeout(updateHeight, delay),
     );
 
     return () => {

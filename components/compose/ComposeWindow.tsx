@@ -242,7 +242,7 @@ function ComposeForm({
                     className="flex items-center gap-2.5 rounded-riov-md border border-border-subtle bg-frame/40 px-3 py-2.5"
                   >
                     <div
-                      className="flex size-7.5 shrink-0 items-center justify-center rounded-2.25 text-[9px] font-bold"
+                      className="flex size-7.5 shrink-0 items-center justify-center rounded-riov-sm text-[9px] font-bold"
                       style={{ background: badge.bg, color: badge.fg }}
                     >
                       {badge.label}

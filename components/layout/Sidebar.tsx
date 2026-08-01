@@ -101,7 +101,7 @@ export function Sidebar({
               alt=""
               width={30}
               height={30}
-              className="rounded-2.25"
+              className="rounded-riov-sm"
             />
             <span className="text-[17px] font-bold tracking-tight text-ink">
               RIOV
@@ -241,7 +241,7 @@ export function Sidebar({
             onClick={() => setMenuOpen((v) => !v)}
             className="relative z-20 flex w-full items-center gap-2.5 rounded-riov-lg border border-border-subtle p-2.5 text-left hover:border-border"
           >
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-2.5 bg-ink text-[13px] font-semibold text-white">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-riov-sm bg-ink text-[13px] font-semibold text-white">
               {user.name[0]?.toUpperCase()}
             </span>
             <span className="min-w-0 flex-1">

@@ -33,7 +33,7 @@ export function ProfileForm({
       )}
 
       <div className="flex items-center gap-3.5 rounded-riov-lg border border-border-subtle p-4">
-        <span className="flex size-10.5 shrink-0 items-center justify-center rounded-3.25 bg-ink text-[15px] font-semibold text-white">
+        <span className="flex size-10.5 shrink-0 items-center justify-center rounded-riov-md bg-ink text-[15px] font-semibold text-white">
           {name[0]?.toUpperCase()}
         </span>
         <div className="min-w-0 flex-1">
