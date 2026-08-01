@@ -65,6 +65,9 @@ export default async function EmailDetailPage({
         : "/inbox";
 
   const { name, email: senderEmail } = parseSender(email.from);
+  const showSenderEmail =
+    Boolean(senderEmail) &&
+    name.toLowerCase().trim() !== senderEmail.toLowerCase().trim();
   const avatar = avatarColorsFor(email.from);
 
   return (
@@ -90,37 +93,41 @@ export default async function EmailDetailPage({
             >
               {initialFor(email.from)}
             </span>
-            <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-              <div className="flex flex-wrap items-center gap-2">
-                <span className="text-[14.5px] font-semibold text-ink">
-                  {name}
-                </span>
-                <span className="text-[13.5px] text-ink-muted">
-                  &lt;{senderEmail}&gt;
-                </span>
-                {email.labels.map((label) => (
-                  <span
-                    key={label.id}
-                    className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold"
-                    style={{
-                      background: `${label.color}22`,
-                      color: label.color,
-                    }}
-                  >
-                    {label.name}
+            <div className="flex min-w-0 flex-1 flex-col gap-3 sm:flex-row sm:items-start sm:justify-between sm:gap-4">
+              <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+                <div className="flex flex-wrap items-center gap-x-2 gap-y-1 min-w-0">
+                  <span className="text-[14.5px] font-semibold text-ink break-all">
+                    {name}
                   </span>
-                ))}
+                  {showSenderEmail && (
+                    <span className="text-[13.5px] text-ink-muted break-all">
+                      &lt;{senderEmail}&gt;
+                    </span>
+                  )}
+                  {email.labels.map((label) => (
+                    <span
+                      key={label.id}
+                      className="rounded-full px-2.5 py-0.5 text-[11px] font-semibold shrink-0"
+                      style={{
+                        background: `${label.color}22`,
+                        color: label.color,
+                      }}
+                    >
+                      {label.name}
+                    </span>
+                  ))}
+                </div>
+                <div className="text-[13.5px] text-ink-secondary break-all">
+                  para <span className="text-ink">{email.to}</span>
+                </div>
               </div>
-              <div className="text-[13.5px] text-ink-secondary">
-                para <span className="text-ink">{email.to}</span>
-              </div>
-            </div>
-            <div className="flex shrink-0 flex-col items-end gap-0.5 text-right">
-              <div className="text-[13.5px] font-semibold text-ink">
-                {formatFullDateTime(email.receivedAt)}
-              </div>
-              <div className="text-[12.5px] text-ink-muted">
-                {formatRelative(email.receivedAt)}
+              <div className="flex shrink-0 flex-col items-start sm:items-end gap-0.5 text-left sm:text-right">
+                <div className="text-[13.5px] font-semibold text-ink whitespace-nowrap">
+                  {formatFullDateTime(email.receivedAt)}
+                </div>
+                <div className="text-[12.5px] text-ink-muted whitespace-nowrap">
+                  {formatRelative(email.receivedAt)}
+                </div>
               </div>
             </div>
           </div>

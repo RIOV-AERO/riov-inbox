@@ -7,11 +7,16 @@ export interface ParsedSender {
 
 /** Splits "Maria Ferraz <maria@lojaverde.com.br>" into name + email. */
 export function parseSender(from: string): ParsedSender {
-  const match = from.match(/^(.+?)\s*<(.+)>$/);
+  const raw = (from || "").trim();
+  const match = raw.match(/^(.*?)\s*<(.+)>$/);
   if (match) {
-    return { name: match[1].trim().replace(/^"|"$/g, ""), email: match[2].trim() };
+    const extractedName = match[1].trim().replace(/^"|"$/g, "");
+    const extractedEmail = match[2].trim();
+    const name = extractedName || extractedEmail;
+    return { name, email: extractedEmail };
   }
-  return { name: from.trim(), email: from.trim() };
+  const cleanEmail = raw.replace(/^<|>$/g, "").trim();
+  return { name: cleanEmail, email: cleanEmail };
 }
 
 /** First letter of the display name (or email), uppercased — used in avatars. */
