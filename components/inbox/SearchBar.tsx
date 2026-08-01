@@ -34,7 +34,8 @@ export function SearchBar({
       if (value) params.set("q", value);
       else params.delete("q");
       startTransition(() => {
-        router.replace(`${pathname}?${params.toString()}`);
+        const qs = params.toString();
+        router.replace(qs ? `${pathname}?${qs}` : pathname);
       });
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, 300);

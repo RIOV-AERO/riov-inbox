@@ -75,6 +75,7 @@ export function Sidebar({
   const pathname = usePathname();
   const searchParams = useSearchParams();
   const isUnreadFilter = searchParams.get("filter") === "unread";
+  const activeLabel = searchParams.get("label");
   const { isOpen, close } = useSidebar();
   const { openCompose } = useCompose();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -122,9 +123,14 @@ export function Sidebar({
           {NAV_ITEMS.map((item) => {
             let isActive: boolean;
             if (item.href === "/inbox") {
-              isActive = pathname === "/inbox" && !isUnreadFilter;
+              isActive =
+                (pathname === "/inbox" || pathname.startsWith("/inbox/")) &&
+                !isUnreadFilter &&
+                !activeLabel;
             } else if (item.href === "/inbox?filter=unread") {
-              isActive = pathname === "/inbox" && isUnreadFilter;
+              isActive =
+                (pathname === "/inbox" || pathname.startsWith("/inbox/")) &&
+                isUnreadFilter;
             } else {
               isActive = pathname.startsWith(item.href);
             }
@@ -134,8 +140,9 @@ export function Sidebar({
               <Link
                 key={item.label}
                 href={item.href}
+                prefetch={true}
                 onClick={close}
-                className={`flex items-center gap-2.5 rounded-riov-md px-3 py-2.5 text-sm transition-colors ${
+                className={`flex items-center gap-2.5 rounded-riov-md px-3 py-2.5 text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
                   isActive
                     ? "bg-accent-tint font-semibold text-accent-deep"
                     : "font-medium text-ink-secondary hover:bg-frame/60"
@@ -168,20 +175,30 @@ export function Sidebar({
               <div className="px-3 text-[11px] font-semibold tracking-wider text-ink-muted uppercase">
                 Marcadores
               </div>
-              {labels.map((label) => (
-                <Link
-                  key={label.id}
-                  href={`/inbox?label=${label.slug}`}
-                  onClick={close}
-                  className="flex items-center gap-2.5 rounded-riov-md px-3 py-2 text-sm text-ink-secondary hover:bg-frame/60"
-                >
-                  <span
-                    className="size-2 rounded-0.75"
-                    style={{ background: label.color }}
-                  />
-                  {label.name}
-                </Link>
-              ))}
+              {labels.map((label) => {
+                const isLabelActive =
+                  (pathname === "/inbox" || pathname.startsWith("/inbox/")) &&
+                  activeLabel === label.slug;
+                return (
+                  <Link
+                    key={label.id}
+                    href={`/inbox?label=${label.slug}`}
+                    prefetch={true}
+                    onClick={close}
+                    className={`flex items-center gap-2.5 rounded-riov-md px-3 py-2 text-sm transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
+                      isLabelActive
+                        ? "bg-accent-tint font-semibold text-accent-deep"
+                        : "font-medium text-ink-secondary hover:bg-frame/60"
+                    }`}
+                  >
+                    <span
+                      className="size-2 rounded-0.75 shrink-0"
+                      style={{ background: label.color }}
+                    />
+                    <span className="flex-1 truncate">{label.name}</span>
+                  </Link>
+                );
+              })}
             </div>
           </>
         )}

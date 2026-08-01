@@ -1,5 +1,6 @@
 import { requireUser } from "@/lib/auth/session";
 import { prisma } from "@/lib/prisma";
+import { getLabels } from "@/lib/email-query";
 import { AppProviders } from "@/components/providers/AppProviders";
 import { Sidebar } from "@/components/layout/Sidebar";
 
@@ -16,7 +17,7 @@ async function loadSidebarData() {
     prisma.email.count({ where: inboxScope }),
     prisma.email.count({ where: { ...inboxScope, read: false } }),
     prisma.email.count({ where: { archived: true, deletedAt: null } }),
-    prisma.label.findMany({ orderBy: { name: "asc" } }),
+    getLabels(),
   ]);
 
   return { counts: { inbox, unread, archived }, labels };

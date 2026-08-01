@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { useTransition } from "react";
 import { Paperclip } from "lucide-react";
 import type { EmailListItem } from "@/lib/email-query";
 import { initialFor, listTimestamp, parseSender } from "@/lib/format";
@@ -21,6 +24,7 @@ export function EmailListRow({
   query?: string;
   action?: EmailListRowAction;
 }) {
+  const [isPending, startTransition] = useTransition();
   const isOutbound = direction === "OUTBOUND";
   const { name } = parseSender(isOutbound ? email.to : email.from);
   const displayName = isOutbound
@@ -31,12 +35,13 @@ export function EmailListRow({
 
   return (
     <div
-      className={`flex items-start gap-3.5 border-l-0.75 px-5 py-4 ${
+      className={`flex items-start gap-3.5 border-l-0.75 px-5 py-4 transition-opacity ${
         unread ? "border-accent bg-[#FCFEFD]" : "border-transparent"
-      }`}
+      } ${isPending ? "opacity-50 pointer-events-none" : ""}`}
     >
       <Link
         href={`/inbox/${email.id}`}
+        prefetch={true}
         className="flex min-w-0 flex-1 items-start gap-3.5"
       >
         <span
@@ -84,12 +89,19 @@ export function EmailListRow({
           </span>
         )}
         {action && (
-          <form action={action.action.bind(null, email.id)}>
+          <form
+            action={() => {
+              startTransition(async () => {
+                await action.action(email.id);
+              });
+            }}
+          >
             <button
               type="submit"
-              className="rounded-full border border-border px-2.75 py-1.5 text-[12px] font-semibold text-ink-secondary hover:border-border-strong"
+              disabled={isPending}
+              className="rounded-full border border-border px-2.75 py-1.5 text-[12px] font-semibold text-ink-secondary hover:border-border-strong disabled:opacity-50"
             >
-              {action.label}
+              {isPending ? "Processando…" : action.label}
             </button>
           </form>
         )}

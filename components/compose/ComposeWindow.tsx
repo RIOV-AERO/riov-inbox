@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useEffect, useRef, useState } from "react";
+import { useTransition, useRef, useState } from "react";
 import { Minus, X, ChevronUp, Send, Paperclip, Trash2 } from "lucide-react";
 import { useCompose } from "./compose-context";
 import { useToast } from "../toast/toast-context";
@@ -85,34 +85,48 @@ function ComposeForm({
   onMinimize: () => void;
   onClose: () => void;
 }) {
-  const [state, formAction, pending] = useActionState(
-    sendComposeAction,
-    initialState,
-  );
+  const [isSending, startSending] = useTransition();
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const { push } = useToast();
-  const handledSuccessRef = useRef(false);
 
   const [showCc, setShowCc] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (state.success && !handledSuccessRef.current) {
-      handledSuccessRef.current = true;
-      push({
-        variant: "success",
-        title: "E-mail enviado",
-        description: state.sentTo ? `Para ${state.sentTo}` : undefined,
-      });
-      onClose();
-    }
-  }, [state, push, onClose]);
 
   function syncFiles(next: File[]) {
     setFiles(next);
     const dt = new DataTransfer();
     next.forEach((file) => dt.items.add(file));
     if (fileInputRef.current) fileInputRef.current.files = dt.files;
+  }
+
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget);
+    setErrorMessage(null);
+
+    push({
+      variant: "neutral",
+      title: "Enviando e-mail…",
+    });
+    onClose();
+
+    startSending(async () => {
+      const res = await sendComposeAction(initialState, formData);
+      if (res.success) {
+        push({
+          variant: "success",
+          title: "E-mail enviado",
+          description: res.sentTo ? `Para ${res.sentTo}` : undefined,
+        });
+      } else {
+        push({
+          variant: "error",
+          title: "Falha ao enviar e-mail",
+          description: res.error || "Tente novamente mais tarde.",
+        });
+      }
+    });
   }
 
   return (
@@ -138,7 +152,7 @@ function ComposeForm({
       </div>
 
       <form
-        action={formAction}
+        onSubmit={handleSubmit}
         className="flex flex-1 flex-col overflow-y-auto"
       >
         {draft.replyToEmailId && (
@@ -149,9 +163,9 @@ function ComposeForm({
           />
         )}
 
-        {state.error && (
+        {errorMessage && (
           <div className="mx-4.5 mt-3 rounded-riov-md border border-danger-border bg-danger-tint px-3.5 py-2 text-[13px] font-medium text-danger">
-            {state.error}
+            {errorMessage}
           </div>
         )}
 
@@ -271,10 +285,10 @@ function ComposeForm({
         <div className="flex items-center gap-2.5 border-t border-border-subtle px-4.5 py-3.5">
           <button
             type="submit"
-            disabled={pending}
+            disabled={isSending}
             className="flex items-center gap-2 rounded-full bg-accent px-5.5 py-2.5 text-sm font-semibold text-white shadow-riov-cta transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {pending ? (
+            {isSending ? (
               <>
                 <span className="size-3.5 animate-riov-spin rounded-full border-2 border-white/35 border-t-white" />
                 Enviando…
@@ -289,7 +303,7 @@ function ComposeForm({
           <button
             type="button"
             onClick={onClose}
-            disabled={pending}
+            disabled={isSending}
             className="px-3 py-2 text-sm font-semibold text-ink-secondary hover:text-ink"
           >
             Cancelar

@@ -1,4 +1,5 @@
 import "server-only";
+import { cache } from "react";
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -57,8 +58,9 @@ export async function createSession(userId: string): Promise<void> {
  * Verifies the session cookie's signature *and* confirms the underlying
  * Session row still exists and hasn't expired — this is what makes logout /
  * revocation actually take effect before the JWT's own expiry.
+ * Memoized per request using React cache.
  */
-export async function getCurrentUser(): Promise<CurrentUser | null> {
+export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const cookieStore = await cookies();
   const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (!token) return null;
@@ -89,7 +91,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
   if (session.expiresAt.getTime() < Date.now()) return null;
 
   return session.user;
-}
+});
 
 /** Redirects to /login when there is no valid session. */
 export async function requireUser(): Promise<CurrentUser> {

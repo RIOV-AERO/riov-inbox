@@ -1,4 +1,10 @@
+import { cache } from "react";
 import { Prisma } from "@/lib/generated/prisma/client/client";
+import { prisma } from "@/lib/prisma";
+
+export const getLabels = cache(async () => {
+  return prisma.label.findMany({ orderBy: { name: "asc" } });
+});
 
 export interface EmailFilters {
   q?: string;

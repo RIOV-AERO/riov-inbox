@@ -35,8 +35,10 @@ export default async function EmailDetailPage({
   if (!email) notFound();
 
   if (!email.read && email.direction === "INBOUND") {
-    await prisma.email.update({ where: { id }, data: { read: true } });
-    revalidatePath("/inbox");
+    // Non-blocking write so page rendering is instant
+    prisma.email.update({ where: { id }, data: { read: true } }).then(() => {
+      revalidatePath("/(app)", "layout");
+    }).catch(() => {});
   }
 
   const backHref = email.deletedAt

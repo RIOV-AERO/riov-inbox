@@ -4,10 +4,8 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
 
-const REVALIDATE_PATHS = ["/inbox", "/sent", "/archived", "/trash"];
-
 function revalidateAll() {
-  for (const path of REVALIDATE_PATHS) revalidatePath(path);
+  revalidatePath("/(app)", "layout");
 }
 
 export async function markReadAction(emailId: string, read: boolean): Promise<void> {

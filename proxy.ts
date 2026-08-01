@@ -6,7 +6,16 @@ import { SESSION_COOKIE } from "@/lib/auth/constants";
 // the database, so a revoked-but-not-yet-expired session can still pass
 // here — getCurrentUser() (used by the authenticated layout) does the
 // authoritative DB-backed check and is what actually enforces logout.
-const PUBLIC_PREFIXES = ["/api/webhooks", "/api/health"];
+const PUBLIC_PREFIXES = [
+  "/api/webhooks",
+  "/api/health",
+  "/robots.txt",
+  "/sitemap.xml",
+  "/manifest",
+  "/opengraph-image",
+  "/icon",
+  "/apple-icon",
+];
 
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -35,5 +44,7 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!_next/static|_next/image|favicon.ico|logo.png).*)"],
+  matcher: [
+    "/((?!_next/static|_next/image|favicon.ico|logo.png|manifest.webmanifest|opengraph-image|icon|apple-icon|robots.txt|sitemap.xml).*)",
+  ],
 };

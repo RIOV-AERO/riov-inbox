@@ -68,7 +68,10 @@ model Email {
     attachments Attachment[]
     labels      Label[]
 
-    @@index([archived, deletedAt, receivedAt])
+    @@index([direction, archived, deletedAt, receivedAt])
+    @@index([direction, deletedAt, receivedAt])
+    @@index([deletedAt, receivedAt])
+    @@index([direction, read, archived, deletedAt])
 }
 
 model Attachment {

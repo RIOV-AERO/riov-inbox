@@ -35,22 +35,38 @@ export function FilterChips({
 
   const isAllActive = !activeFilter && !activeLabel;
 
+  const unreadHref =
+    activeFilter === "unread"
+      ? hrefFor({ label: activeLabel ?? undefined })
+      : hrefFor({ filter: "unread", label: activeLabel ?? undefined });
+
+  const attachmentsHref =
+    activeFilter === "attachments"
+      ? hrefFor({ label: activeLabel ?? undefined })
+      : hrefFor({ filter: "attachments", label: activeLabel ?? undefined });
+
   return (
     <div className="flex flex-wrap items-center gap-2.5">
       <Chip href={hrefFor({})} active={isAllActive} tone="dark">
         Todos
       </Chip>
-      <Chip href={hrefFor({ filter: "unread" })} active={activeFilter === "unread"}>
+      <Chip href={unreadHref} active={activeFilter === "unread"}>
         Não Lidos{unreadCount > 0 ? ` · ${unreadCount}` : ""}
       </Chip>
-      <Chip href={hrefFor({ filter: "attachments" })} active={activeFilter === "attachments"}>
+      <Chip href={attachmentsHref} active={activeFilter === "attachments"}>
         Com Anexos
       </Chip>
-      {labels.map((label) => (
-        <Chip key={label.slug} href={hrefFor({ label: label.slug })} active={activeLabel === label.slug}>
-          {label.name}
-        </Chip>
-      ))}
+      {labels.map((label) => {
+        const isLabelActive = activeLabel === label.slug;
+        const labelHref = isLabelActive
+          ? hrefFor({ filter: activeFilter ?? undefined })
+          : hrefFor({ label: label.slug, filter: activeFilter ?? undefined });
+        return (
+          <Chip key={label.slug} href={labelHref} active={isLabelActive}>
+            {label.name}
+          </Chip>
+        );
+      })}
 
       {q && resultCount !== undefined && (
         <div className="ml-auto text-[13px] text-ink-secondary">
@@ -79,7 +95,7 @@ function Chip({
     return (
       <Link
         href={href}
-        className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-[13px] font-medium text-ink-secondary hover:border-border-strong"
+        className="rounded-full border border-border bg-surface px-3.5 py-1.5 text-[13px] font-medium text-ink-secondary hover:border-border-strong focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
       >
         {children}
       </Link>
@@ -88,7 +104,10 @@ function Chip({
 
   if (tone === "dark") {
     return (
-      <Link href={href} className="rounded-full bg-ink px-3.5 py-1.5 text-[13px] font-semibold text-white">
+      <Link
+        href={href}
+        className="rounded-full bg-ink px-3.5 py-1.5 text-[13px] font-semibold text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
+      >
         {children}
       </Link>
     );
@@ -97,7 +116,7 @@ function Chip({
   return (
     <Link
       href={href}
-      className="flex items-center gap-1.5 rounded-full border border-accent-tint-border bg-accent-tint px-3 py-1.5 text-[13px] font-semibold text-accent-deep"
+      className="flex items-center gap-1.5 rounded-full border border-accent-tint-border bg-accent-tint px-3 py-1.5 text-[13px] font-semibold text-accent-deep focus:outline-none focus-visible:ring-2 focus-visible:ring-accent"
     >
       {children}
       <X size={11} strokeWidth={2.6} />

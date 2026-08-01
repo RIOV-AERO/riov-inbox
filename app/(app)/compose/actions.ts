@@ -93,8 +93,7 @@ export async function sendComposeAction(
     },
   });
 
-  revalidatePath("/inbox");
-  revalidatePath("/sent");
+  revalidatePath("/(app)", "layout");
 
   return { success: true, sentTo: to[0] };
 }

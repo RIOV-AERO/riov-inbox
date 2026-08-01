@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Inbox as InboxIcon, SearchX, SlidersHorizontal } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { buildEmailWhere, EMAIL_LIST_SELECT } from "@/lib/email-query";
+import { buildEmailWhere, EMAIL_LIST_SELECT, getLabels } from "@/lib/email-query";
 import { FROM_ADDRESS } from "@/lib/resend";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/inbox/SearchBar";
@@ -40,7 +40,7 @@ export default async function InboxPage({
       select: EMAIL_LIST_SELECT,
     }),
     prisma.email.count({ where: { ...scope, read: false } }),
-    prisma.label.findMany({ orderBy: { name: "asc" } }),
+    getLabels(),
   ]);
 
   const isFiltered = Boolean(params.q || params.filter || params.label);
