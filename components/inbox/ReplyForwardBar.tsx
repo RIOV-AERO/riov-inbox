@@ -18,7 +18,7 @@ export function ReplyForwardBar({
 
   return (
     <div
-      className={`sticky bottom-0 z-20 flex items-center gap-2.5 bg-page/90 backdrop-blur-md py-3.5 border-t border-border-subtle mt-auto ${className}`}
+      className={`sticky bottom-0 z-20 flex items-center gap-2.5 bg-page/90 backdrop-blur-md py-1.5 border-t border-border-subtle mt-auto ${className}`}
     >
       <button
         type="button"
@@ -31,9 +31,9 @@ export function ReplyForwardBar({
             replyToEmailId: emailId,
           })
         }
-        className="flex items-center gap-2 rounded-full bg-ink px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition-transform active:scale-95 hover:bg-ink/90"
+        className="flex items-center gap-2 rounded-full bg-ink px-4 py-1.5 text-xs sm:text-sm font-semibold text-white shadow-sm transition-transform active:scale-95 hover:bg-ink/90"
       >
-        <Reply size={15} strokeWidth={1.8} />
+        <Reply size={14} strokeWidth={1.8} />
         Responder
       </button>
       <button
@@ -47,9 +47,9 @@ export function ReplyForwardBar({
             replyToEmailId: emailId,
           })
         }
-        className="flex items-center gap-2 rounded-full border border-border bg-surface px-5 py-2.5 text-sm font-semibold text-ink-secondary shadow-sm transition-transform active:scale-95 hover:border-border-strong hover:bg-surface/80"
+        className="flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-1.5 text-xs sm:text-sm font-semibold text-ink-secondary shadow-sm transition-transform active:scale-95 hover:border-border-strong hover:bg-surface/80"
       >
-        <Forward size={15} strokeWidth={1.8} />
+        <Forward size={14} strokeWidth={1.8} />
         Encaminhar
       </button>
     </div>
