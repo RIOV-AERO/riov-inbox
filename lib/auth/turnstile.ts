@@ -30,14 +30,15 @@ export async function verifyTurnstileToken(
 ): Promise<{ success: boolean; error?: string }> {
   const secretKey = process.env.TURNSTILE_SECRET_KEY;
 
-  // In local dev without keys configured, warn and bypass to prevent blocking developer iteration
+  // In local dev mode, bypass Turnstile verification to allow testing on localhost
+  if (process.env.NODE_ENV !== "production") {
+    console.warn(
+      "[Turnstile] Development mode detected. Bypassing Turnstile verification on localhost.",
+    );
+    return { success: true };
+  }
+
   if (!secretKey) {
-    if (process.env.NODE_ENV !== "production") {
-      console.warn(
-        "[Turnstile] TURNSTILE_SECRET_KEY is missing. Skipping bot verification in development mode.",
-      );
-      return { success: true };
-    }
     return {
       success: false,
       error: "Verificação de bot não configurada no servidor.",
