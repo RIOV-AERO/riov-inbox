@@ -22,7 +22,8 @@ export function NotificationToggle({
         push({
           variant: "error",
           title: "Notificações não suportadas",
-          description: "Seu navegador não possui suporte a notificações nativas.",
+          description:
+            "Seu navegador não possui suporte a notificações nativas.",
         });
         return;
       }
