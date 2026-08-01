@@ -110,10 +110,10 @@ export default async function ArchivedPage({
   const params = await searchParams;
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col h-full overflow-hidden">
       <PageHeader title="Arquivados" />
 
-      <div className="flex flex-col gap-4 border-b border-border bg-surface px-5 py-4 md:px-7">
+      <div className="flex shrink-0 flex-col gap-4 border-b border-border bg-surface px-5 py-4 md:px-7">
         <div className="flex items-center gap-4">
           <SearchBar placeholder="Buscar arquivados…" />
           <div className="ml-auto hidden items-center gap-2 md:flex">
@@ -132,7 +132,7 @@ export default async function ArchivedPage({
         </Suspense>
       </div>
 
-      <div className="flex-1 overflow-y-auto px-5 py-5 md:px-7">
+      <div className="flex-1 overflow-y-auto px-5 py-5 md:px-7 min-h-0">
         <Suspense fallback={<ListSkeleton />}>
           <ArchivedEmailListSection params={params} />
         </Suspense>

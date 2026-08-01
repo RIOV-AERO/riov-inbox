@@ -35,9 +35,9 @@ export default async function SettingsPage() {
   const user = await requireUser();
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col h-full overflow-hidden">
       <FolderHeader title="Configurações" />
-      <div className="mx-auto flex w-full max-w-160 flex-1 flex-col gap-8 px-5 py-7 md:px-7">
+      <div className="mx-auto flex w-full max-w-160 flex-1 flex-col gap-8 px-5 py-7 md:px-7 overflow-y-auto min-h-0">
         <section className="flex flex-col gap-3">
           <div className="text-[11px] font-semibold tracking-wider text-ink-muted uppercase">
             Conta

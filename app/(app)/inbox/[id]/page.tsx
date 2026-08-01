@@ -53,7 +53,7 @@ export default async function EmailDetailPage({
   const avatar = avatarColorsFor(email.from);
 
   return (
-    <div className="flex flex-1 flex-col">
+    <div className="flex flex-1 flex-col h-full overflow-hidden">
       <EmailActionsBar
         emailId={email.id}
         backHref={backHref}
@@ -63,7 +63,7 @@ export default async function EmailDetailPage({
         showReadToggle={email.direction === "INBOUND"}
       />
 
-      <div className="mx-auto flex w-full max-w-210 flex-1 flex-col gap-5 px-5 py-7 md:px-7">
+      <div className="mx-auto flex w-full max-w-210 flex-1 flex-col gap-5 px-5 py-7 md:px-7 overflow-y-auto min-h-0">
         <div className="flex flex-col gap-4 rounded-riov-xl border border-border bg-surface p-6">
           <h1 className="text-2xl leading-tight font-bold tracking-tight text-ink text-pretty">
             {email.subject}

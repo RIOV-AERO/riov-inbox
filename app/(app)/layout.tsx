@@ -24,13 +24,13 @@ export default async function AppLayout({
 
   return (
     <AppProviders>
-      <div className="flex min-h-screen">
+      <div className="flex h-screen w-full overflow-hidden bg-page">
         <Sidebar
           counts={counts}
           labels={labels}
           user={{ name: user.name, email: user.email }}
         />
-        <main className="flex min-w-0 flex-1 flex-col">{children}</main>
+        <main className="flex min-w-0 flex-1 flex-col h-full overflow-hidden">{children}</main>
       </div>
     </AppProviders>
   );
