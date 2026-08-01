@@ -82,7 +82,7 @@ export function EmailActionsBar({
   showReadToggle: boolean;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-2.5 border-b border-border bg-surface px-5 py-3.5 md:px-7">
+    <div className="sticky top-0 z-30 shrink-0 flex flex-wrap items-center gap-2.5 border-b border-border bg-surface/95 backdrop-blur-md px-5 py-3.5 md:px-7">
       <Link
         href={backHref}
         prefetch={true}

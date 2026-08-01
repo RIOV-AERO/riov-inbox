@@ -17,9 +17,7 @@ export function ReplyForwardBar({
   const { openCompose } = useCompose();
 
   return (
-    <div
-      className={`sticky bottom-0 z-20 flex items-center gap-2.5 bg-page/90 backdrop-blur-md py-1.5 border-t border-border-subtle mt-auto ${className}`}
-    >
+    <div className={`flex items-center gap-2.5 pt-2 shrink-0 ${className}`}>
       <button
         type="button"
         onClick={() =>

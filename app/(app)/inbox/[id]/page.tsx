@@ -71,7 +71,7 @@ export default async function EmailDetailPage({
   const avatar = avatarColorsFor(email.from);
 
   return (
-    <div className="flex flex-1 flex-col h-full overflow-hidden">
+    <div className="flex flex-1 flex-col h-full overflow-y-auto min-h-0">
       <EmailActionsBar
         emailId={email.id}
         backHref={backHref}
@@ -81,8 +81,8 @@ export default async function EmailDetailPage({
         showReadToggle={email.direction === "INBOUND"}
       />
 
-      <div className="mx-auto flex w-full max-w-210 flex-1 flex-col gap-5 px-5 py-7 md:px-7 overflow-y-auto min-h-0">
-        <div className="flex flex-col gap-4 rounded-riov-xl border border-border bg-surface p-6">
+      <div className="mx-auto flex w-full max-w-210 flex-col gap-5 px-5 py-7 md:px-7">
+        <div className="flex flex-col gap-4 rounded-riov-xl border border-border bg-surface p-6 shrink-0">
           <h1 className="text-2xl leading-tight font-bold tracking-tight text-ink text-pretty">
             {email.subject}
           </h1>
@@ -134,7 +134,7 @@ export default async function EmailDetailPage({
         </div>
 
         {email.html ? (
-          <div className="overflow-hidden rounded-riov-xl border border-border bg-surface">
+          <div className="overflow-hidden rounded-riov-xl border border-border bg-surface shrink-0">
             <div className="flex items-center gap-2 border-b border-border-subtle bg-[#FAFAF8] px-4.5 py-2.5">
               <FileCode2
                 size={13}
@@ -148,19 +148,19 @@ export default async function EmailDetailPage({
             <HtmlEmailViewer html={email.html} />
           </div>
         ) : email.text ? (
-          <div className="rounded-riov-xl border border-border bg-surface p-7">
+          <div className="rounded-riov-xl border border-border bg-surface p-7 shrink-0">
             <pre className="max-w-[68ch] font-sans text-[15.5px] leading-relaxed wrap-break-word whitespace-pre-wrap text-[#26302B]">
               {email.text}
             </pre>
           </div>
         ) : (
-          <div className="rounded-riov-xl border border-border bg-surface p-7 text-sm text-ink-muted">
+          <div className="rounded-riov-xl border border-border bg-surface p-7 text-sm text-ink-muted shrink-0">
             (sem conteúdo)
           </div>
         )}
 
         {email.attachments.length > 0 && (
-          <div className="flex flex-col gap-3.5 rounded-riov-xl border border-border bg-surface p-5">
+          <div className="flex flex-col gap-3.5 rounded-riov-xl border border-border bg-surface p-5 shrink-0">
             <div className="flex items-center gap-2">
               <Paperclip
                 size={15}
@@ -193,7 +193,6 @@ export default async function EmailDetailPage({
             emailId={email.id}
             senderEmail={senderEmail}
             subject={email.subject}
-            className="-mx-5 px-5 md:-mx-7 md:px-7"
           />
         )}
       </div>
