@@ -89,7 +89,7 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
           body.offsetHeight,
           docEl.scrollHeight,
           docEl.offsetHeight,
-          Math.ceil(maxChildBottom)
+          Math.ceil(maxChildBottom),
         );
 
         if (contentHeight > 0) {
@@ -108,7 +108,9 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
       if (e.touches.length === 1) {
         touchStartY = e.touches[0].clientY;
         touchStartX = e.touches[0].clientX;
-        const container = iframe.closest(".overflow-y-auto") as HTMLElement | null;
+        const container = iframe.closest(
+          ".overflow-y-auto",
+        ) as HTMLElement | null;
         if (container) {
           initialScrollTop = container.scrollTop;
         }
@@ -124,7 +126,9 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
       const deltaX = touchStartX - currentX;
 
       if (Math.abs(deltaY) > Math.abs(deltaX)) {
-        const container = iframe.closest(".overflow-y-auto") as HTMLElement | null;
+        const container = iframe.closest(
+          ".overflow-y-auto",
+        ) as HTMLElement | null;
         if (container) {
           container.scrollTop = initialScrollTop + deltaY;
         }
@@ -181,7 +185,7 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
     setupDocListeners();
 
     const timeouts = [50, 150, 300, 600, 1200, 2500].map((delay) =>
-      setTimeout(updateHeight, delay)
+      setTimeout(updateHeight, delay),
     );
 
     return () => {

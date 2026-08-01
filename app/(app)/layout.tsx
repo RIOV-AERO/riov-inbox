@@ -18,7 +18,11 @@ export default async function AppLayout({
 
   return (
     <AppProviders
-      user={{ email: user.email, registeredEmails: user.registeredEmails }}
+      user={{
+        email: user.email,
+        registeredEmails: user.registeredEmails,
+        desktopNotifications: user.desktopNotifications,
+      }}
     >
       <div className="flex h-screen h-dvh w-full overflow-hidden bg-page">
         <Sidebar

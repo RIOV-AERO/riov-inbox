@@ -75,7 +75,11 @@ export function formatRelative(date: Date, now: Date = new Date()): string {
 }
 
 function startOfDay(date: Date): number {
-  return new Date(date.getFullYear(), date.getMonth(), date.getDate()).getTime();
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  ).getTime();
 }
 
 /** "Hoje" / "Ontem" / "22 jul" — used both as a row timestamp and a group header. */

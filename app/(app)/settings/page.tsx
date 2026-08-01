@@ -4,6 +4,7 @@ import { ProfileForm } from "./_components/ProfileForm";
 import { PasswordForm } from "./_components/PasswordForm";
 import { DensityControl } from "./_components/DensityControl";
 import { SettingToggle } from "./_components/SettingToggle";
+import { NotificationToggle } from "./_components/NotificationToggle";
 import { RegisteredEmailsControl } from "./_components/RegisteredEmailsControl";
 import {
   setLoadExternalImagesAction,
@@ -108,7 +109,7 @@ export default async function SettingsPage() {
             title="Notificações no desktop"
             description="Avisar quando chegar e-mail novo"
           >
-            <SettingToggle
+            <NotificationToggle
               initialValue={user.desktopNotifications}
               onToggle={setDesktopNotificationsAction}
             />
