@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import Link from "next/link";
 import { Send, SearchX, SlidersHorizontal } from "lucide-react";
 import { prisma } from "@/lib/prisma";
@@ -17,26 +18,90 @@ interface FolderSearchParams {
   label?: string;
 }
 
+const SENT_SCOPE = { direction: "OUTBOUND" as const, deletedAt: null };
+
+async function SentFilterChipsSection() {
+  const labels = await getLabels();
+  return <FilterChips unreadCount={0} labels={labels} />;
+}
+
+async function SentEmailListSection({ params }: { params: FolderSearchParams }) {
+  const where = buildEmailWhere(SENT_SCOPE, params);
+  const emails = await prisma.email.findMany({
+    where,
+    orderBy: { receivedAt: "desc" },
+    take: 200,
+    select: EMAIL_LIST_SELECT,
+  });
+
+  const isFiltered = Boolean(params.q || params.filter || params.label);
+
+  if (emails.length === 0) {
+    if (isFiltered) {
+      return (
+        <EmptyState
+          icon={SearchX}
+          title="Nada encontrado"
+          description={
+            params.q
+              ? `Sem resultados para "${params.q}" nos enviados.`
+              : "Nenhum e-mail enviado corresponde a este filtro."
+          }
+          tone="neutral"
+          action={
+            <Link
+              href="/sent"
+              className="mt-1 rounded-full border border-accent-tint-border bg-accent-tint px-4 py-2 text-[13.5px] font-semibold text-accent-hover"
+            >
+              Limpar filtros
+            </Link>
+          }
+        />
+      );
+    }
+
+    return (
+      <EmptyState
+        icon={Send}
+        title="Nenhum e-mail enviado ainda."
+        description="Mensagens que você enviar pela RIOV aparecem aqui."
+      />
+    );
+  }
+
+  return (
+    <EmailList
+      emails={emails}
+      direction="OUTBOUND"
+      query={params.q}
+      grouped={!params.q}
+    />
+  );
+}
+
+function ListSkeleton() {
+  return (
+    <div className="flex flex-col divide-y divide-border-subtle overflow-hidden rounded-riov-xl border border-border bg-surface">
+      {[1, 2, 3, 4].map((i) => (
+        <div key={i} className="flex items-center gap-3.5 px-5 py-4">
+          <div className="size-9 shrink-0 animate-pulse rounded-riov-md bg-frame" />
+          <div className="flex flex-1 flex-col gap-2">
+            <div className="h-2.25 w-40 animate-pulse rounded-1.25 bg-frame" />
+            <div className="h-2.75 w-72 animate-pulse rounded-1.25 bg-border-subtle" />
+          </div>
+          <div className="h-2.25 w-9 shrink-0 animate-pulse rounded-1.25 bg-frame" />
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default async function SentPage({
   searchParams,
 }: {
   searchParams: Promise<FolderSearchParams>;
 }) {
   const params = await searchParams;
-  const scope = { direction: "OUTBOUND" as const, deletedAt: null };
-  const where = buildEmailWhere(scope, params);
-
-  const [emails, labels] = await Promise.all([
-    prisma.email.findMany({
-      where,
-      orderBy: { receivedAt: "desc" },
-      take: 200,
-      select: EMAIL_LIST_SELECT,
-    }),
-    getLabels(),
-  ]);
-
-  const isFiltered = Boolean(params.q || params.filter || params.label);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -56,49 +121,15 @@ export default async function SentPage({
             </Link>
           </div>
         </div>
-        <FilterChips
-          unreadCount={0}
-          labels={labels}
-          resultCount={params.q ? emails.length : undefined}
-        />
+        <Suspense fallback={<div className="h-8 w-64 animate-pulse rounded-full bg-frame" />}>
+          <SentFilterChipsSection />
+        </Suspense>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-5 md:px-7">
-        {emails.length === 0 ? (
-          isFiltered ? (
-            <EmptyState
-              icon={SearchX}
-              title="Nada encontrado"
-              description={
-                params.q
-                  ? `Sem resultados para "${params.q}" nos enviados.`
-                  : "Nenhum e-mail enviado corresponde a este filtro."
-              }
-              tone="neutral"
-              action={
-                <Link
-                  href="/sent"
-                  className="mt-1 rounded-full border border-accent-tint-border bg-accent-tint px-4 py-2 text-[13.5px] font-semibold text-accent-hover"
-                >
-                  Limpar filtros
-                </Link>
-              }
-            />
-          ) : (
-            <EmptyState
-              icon={Send}
-              title="Nenhum e-mail enviado ainda."
-              description="Mensagens que você enviar pela RIOV aparecem aqui."
-            />
-          )
-        ) : (
-          <EmailList
-            emails={emails}
-            direction="OUTBOUND"
-            query={params.q}
-            grouped={!params.q}
-          />
-        )}
+        <Suspense fallback={<ListSkeleton />}>
+          <SentEmailListSection params={params} />
+        </Suspense>
       </div>
     </div>
   );

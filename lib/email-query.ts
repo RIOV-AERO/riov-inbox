@@ -6,6 +6,22 @@ export const getLabels = cache(async () => {
   return prisma.label.findMany({ orderBy: { name: "asc" } });
 });
 
+export const getSidebarCounts = cache(async () => {
+  const inboxScope = {
+    direction: "INBOUND" as const,
+    archived: false,
+    deletedAt: null,
+  };
+
+  const [inbox, unread, archived] = await Promise.all([
+    prisma.email.count({ where: inboxScope }),
+    prisma.email.count({ where: { ...inboxScope, read: false } }),
+    prisma.email.count({ where: { archived: true, deletedAt: null } }),
+  ]);
+
+  return { inbox, unread, archived };
+});
+
 export interface EmailFilters {
   q?: string;
   filter?: string;
