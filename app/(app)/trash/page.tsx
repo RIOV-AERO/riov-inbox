@@ -2,7 +2,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Trash2, SearchX, SlidersHorizontal } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { buildEmailWhere, EMAIL_LIST_SELECT, getLabels } from "@/lib/email-query";
+import {
+  buildEmailWhere,
+  EMAIL_LIST_SELECT,
+  getLabels,
+} from "@/lib/email-query";
 import { restoreEmailAction } from "@/app/(app)/email-actions";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/inbox/SearchBar";
@@ -30,7 +34,11 @@ async function TrashFilterChipsSection() {
   return <FilterChips unreadCount={unreadCount} labels={labels} />;
 }
 
-async function TrashEmailListSection({ params }: { params: FolderSearchParams }) {
+async function TrashEmailListSection({
+  params,
+}: {
+  params: FolderSearchParams;
+}) {
   const where = buildEmailWhere(TRASH_SCOPE, params);
   const emails = await prisma.email.findMany({
     where,
@@ -127,7 +135,11 @@ export default async function TrashPage({
             </Link>
           </div>
         </div>
-        <Suspense fallback={<div className="h-8 w-64 animate-pulse rounded-full bg-frame" />}>
+        <Suspense
+          fallback={
+            <div className="h-8 w-64 animate-pulse rounded-full bg-frame" />
+          }
+        >
           <TrashFilterChipsSection />
         </Suspense>
       </div>

@@ -2,7 +2,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Inbox as InboxIcon, SearchX, SlidersHorizontal } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { buildEmailWhere, EMAIL_LIST_SELECT, getLabels } from "@/lib/email-query";
+import {
+  buildEmailWhere,
+  EMAIL_LIST_SELECT,
+  getLabels,
+} from "@/lib/email-query";
 import { FROM_ADDRESS } from "@/lib/resend";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/inbox/SearchBar";
@@ -26,7 +30,11 @@ const INBOX_SCOPE = {
   deletedAt: null,
 };
 
-async function InboxFilterChipsSection({ params }: { params: InboxSearchParams }) {
+async function InboxFilterChipsSection({
+  params,
+}: {
+  params: InboxSearchParams;
+}) {
   const [unreadCount, labels] = await Promise.all([
     prisma.email.count({ where: { ...INBOX_SCOPE, read: false } }),
     getLabels(),
@@ -35,7 +43,11 @@ async function InboxFilterChipsSection({ params }: { params: InboxSearchParams }
   return <FilterChips unreadCount={unreadCount} labels={labels} />;
 }
 
-async function InboxEmailListSection({ params }: { params: InboxSearchParams }) {
+async function InboxEmailListSection({
+  params,
+}: {
+  params: InboxSearchParams;
+}) {
   const where = buildEmailWhere(INBOX_SCOPE, params);
   const emails = await prisma.email.findMany({
     where,
@@ -125,7 +137,11 @@ export default async function InboxPage({
             </Link>
           </div>
         </div>
-        <Suspense fallback={<div className="h-8 w-64 animate-pulse rounded-full bg-frame" />}>
+        <Suspense
+          fallback={
+            <div className="h-8 w-64 animate-pulse rounded-full bg-frame" />
+          }
+        >
           <InboxFilterChipsSection params={params} />
         </Suspense>
       </div>

@@ -3,7 +3,15 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { ArrowLeft, MailOpen, Mail, Archive, ArchiveRestore, Trash2, RotateCcw } from "lucide-react";
+import {
+  ArrowLeft,
+  MailOpen,
+  Mail,
+  Archive,
+  ArchiveRestore,
+  Trash2,
+  RotateCcw,
+} from "lucide-react";
 import {
   markReadAction,
   archiveEmailAction,

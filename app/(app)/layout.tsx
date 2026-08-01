@@ -6,10 +6,7 @@ import { Sidebar } from "@/components/layout/Sidebar";
 export const dynamic = "force-dynamic";
 
 async function loadSidebarData() {
-  const [counts, labels] = await Promise.all([
-    getSidebarCounts(),
-    getLabels(),
-  ]);
+  const [counts, labels] = await Promise.all([getSidebarCounts(), getLabels()]);
 
   return { counts, labels };
 }
@@ -30,7 +27,9 @@ export default async function AppLayout({
           labels={labels}
           user={{ name: user.name, email: user.email }}
         />
-        <main className="flex min-w-0 flex-1 flex-col h-full overflow-hidden">{children}</main>
+        <main className="flex min-w-0 flex-1 flex-col h-full overflow-hidden">
+          {children}
+        </main>
       </div>
     </AppProviders>
   );

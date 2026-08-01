@@ -2,7 +2,11 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Send, SearchX, SlidersHorizontal } from "lucide-react";
 import { prisma } from "@/lib/prisma";
-import { buildEmailWhere, EMAIL_LIST_SELECT, getLabels } from "@/lib/email-query";
+import {
+  buildEmailWhere,
+  EMAIL_LIST_SELECT,
+  getLabels,
+} from "@/lib/email-query";
 import { PageHeader } from "@/components/layout/PageHeader";
 import { SearchBar } from "@/components/inbox/SearchBar";
 import { FilterChips } from "@/components/inbox/FilterChips";
@@ -25,7 +29,11 @@ async function SentFilterChipsSection() {
   return <FilterChips unreadCount={0} labels={labels} />;
 }
 
-async function SentEmailListSection({ params }: { params: FolderSearchParams }) {
+async function SentEmailListSection({
+  params,
+}: {
+  params: FolderSearchParams;
+}) {
   const where = buildEmailWhere(SENT_SCOPE, params);
   const emails = await prisma.email.findMany({
     where,
@@ -121,7 +129,11 @@ export default async function SentPage({
             </Link>
           </div>
         </div>
-        <Suspense fallback={<div className="h-8 w-64 animate-pulse rounded-full bg-frame" />}>
+        <Suspense
+          fallback={
+            <div className="h-8 w-64 animate-pulse rounded-full bg-frame" />
+          }
+        >
           <SentFilterChipsSection />
         </Suspense>
       </div>

@@ -8,7 +8,10 @@ function revalidateAll() {
   revalidatePath("/(app)", "layout");
 }
 
-export async function markReadAction(emailId: string, read: boolean): Promise<void> {
+export async function markReadAction(
+  emailId: string,
+  read: boolean,
+): Promise<void> {
   await requireUser();
   await prisma.email.update({ where: { id: emailId }, data: { read } });
   revalidateAll();
@@ -16,13 +19,19 @@ export async function markReadAction(emailId: string, read: boolean): Promise<vo
 
 export async function archiveEmailAction(emailId: string): Promise<void> {
   await requireUser();
-  await prisma.email.update({ where: { id: emailId }, data: { archived: true } });
+  await prisma.email.update({
+    where: { id: emailId },
+    data: { archived: true },
+  });
   revalidateAll();
 }
 
 export async function unarchiveEmailAction(emailId: string): Promise<void> {
   await requireUser();
-  await prisma.email.update({ where: { id: emailId }, data: { archived: false } });
+  await prisma.email.update({
+    where: { id: emailId },
+    data: { archived: false },
+  });
   revalidateAll();
 }
 
@@ -37,6 +46,9 @@ export async function trashEmailAction(emailId: string): Promise<void> {
 
 export async function restoreEmailAction(emailId: string): Promise<void> {
   await requireUser();
-  await prisma.email.update({ where: { id: emailId }, data: { deletedAt: null } });
+  await prisma.email.update({
+    where: { id: emailId },
+    data: { deletedAt: null },
+  });
   revalidateAll();
 }

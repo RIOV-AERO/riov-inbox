@@ -35,12 +35,12 @@ model User {
 // Refresh-token store — lets us revoke a single session (logout) or all
 // sessions for a user without waiting for JWT expiry.
 model Session {
-    id             String   @id @default(cuid())
-    userId         String
-    user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-    refreshTokenHash String @unique
-    expiresAt      DateTime
-    createdAt      DateTime @default(now())
+    id               String   @id @default(cuid())
+    userId           String
+    user             User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    refreshTokenHash String   @unique
+    expiresAt        DateTime
+    createdAt        DateTime @default(now())
 }
 
 model Label {
