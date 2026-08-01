@@ -19,17 +19,19 @@ enum ListDensity {
 }
 
 model User {
-    id                   String      @id @default(cuid())
-    email                String      @unique
-    passwordHash         String
-    name                 String
-    density              ListDensity @default(COMFORTABLE)
-    loadExternalImages   Boolean     @default(true)
-    desktopNotifications Boolean     @default(false)
-    signature            String?
-    createdAt            DateTime    @default(now())
-    updatedAt            DateTime    @updatedAt
-    sessions             Session[]
+    id                        String      @id @default(cuid())
+    email                     String      @unique
+    passwordHash              String
+    name                      String
+    density                   ListDensity @default(COMFORTABLE)
+    loadExternalImages        Boolean     @default(true)
+    desktopNotifications      Boolean     @default(false)
+    signature                 String?
+    registeredEmails          String[]    @default([])
+    receiveUnregisteredEmails Boolean     @default(false)
+    createdAt                 DateTime    @default(now())
+    updatedAt                 DateTime    @updatedAt
+    sessions                  Session[]
 }
 
 // Refresh-token store — lets us revoke a single session (logout) or all

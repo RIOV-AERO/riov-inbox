@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Archive, SearchX, SlidersHorizontal } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth/session";
+import { getInboundOrOutboundUserScope } from "@/lib/user-emails";
+import { Prisma } from "@/lib/generated/prisma/client/client";
 import {
   buildEmailWhere,
   EMAIL_LIST_SELECT,
@@ -25,9 +28,15 @@ interface FolderSearchParams {
 
 const ARCHIVED_SCOPE = { archived: true, deletedAt: null };
 
-async function ArchivedFilterChipsSection() {
+async function ArchivedFilterChipsSection({
+  userScope,
+}: {
+  userScope: Prisma.EmailWhereInput;
+}) {
   const [unreadCount, labels] = await Promise.all([
-    prisma.email.count({ where: { ...ARCHIVED_SCOPE, read: false } }),
+    prisma.email.count({
+      where: { ...ARCHIVED_SCOPE, read: false, AND: [userScope] },
+    }),
     getLabels(),
   ]);
 
@@ -36,10 +45,12 @@ async function ArchivedFilterChipsSection() {
 
 async function ArchivedEmailListSection({
   params,
+  userScope,
 }: {
   params: FolderSearchParams;
+  userScope: Prisma.EmailWhereInput;
 }) {
-  const where = buildEmailWhere(ARCHIVED_SCOPE, params);
+  const where = buildEmailWhere(ARCHIVED_SCOPE, params, userScope);
   const emails = await prisma.email.findMany({
     where,
     orderBy: { receivedAt: "desc" },
@@ -115,7 +126,8 @@ export default async function ArchivedPage({
 }: {
   searchParams: Promise<FolderSearchParams>;
 }) {
-  const params = await searchParams;
+  const [user, params] = await Promise.all([requireUser(), searchParams]);
+  const userScope = await getInboundOrOutboundUserScope(user);
 
   return (
     <div className="flex flex-1 flex-col h-full overflow-hidden">
@@ -140,13 +152,13 @@ export default async function ArchivedPage({
             <div className="h-8 w-64 animate-pulse rounded-full bg-frame" />
           }
         >
-          <ArchivedFilterChipsSection />
+          <ArchivedFilterChipsSection userScope={userScope} />
         </Suspense>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-5 md:px-7 min-h-0">
         <Suspense fallback={<ListSkeleton />}>
-          <ArchivedEmailListSection params={params} />
+          <ArchivedEmailListSection params={params} userScope={userScope} />
         </Suspense>
       </div>
     </div>

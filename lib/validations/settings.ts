@@ -13,7 +13,9 @@ export type SettingsInput = z.infer<typeof settingsSchema>;
 export const changePasswordSchema = z
   .object({
     currentPassword: z.string().min(1, "Informe a senha atual"),
-    newPassword: z.string().min(8, "A nova senha precisa de ao menos 8 caracteres"),
+    newPassword: z
+      .string()
+      .min(8, "A nova senha precisa de ao menos 8 caracteres"),
     confirmPassword: z.string().min(1, "Confirme a nova senha"),
   })
   .refine((data) => data.newPassword === data.confirmPassword, {
@@ -21,4 +23,13 @@ export const changePasswordSchema = z
     path: ["confirmPassword"],
   });
 
-export type ChangePasswordInput = z.infer<typeof changePasswordSchema>;
+export const addRegisteredEmailSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, "Informe um e-mail ou apelido válido")
+    .max(100, "Endereço muito longo")
+    .transform((val) => val.toLowerCase()),
+});
+
+export type AddRegisteredEmailInput = z.infer<typeof addRegisteredEmailSchema>;

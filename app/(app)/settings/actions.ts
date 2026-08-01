@@ -4,7 +4,11 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
-import { settingsSchema, changePasswordSchema } from "@/lib/validations/settings";
+import {
+  settingsSchema,
+  changePasswordSchema,
+  addRegisteredEmailSchema,
+} from "@/lib/validations/settings";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
 
 export type ProfileState = { error?: string; success?: boolean };
@@ -42,19 +46,32 @@ export async function setDensityAction(density: string): Promise<void> {
   const parsed = densityEnum.safeParse(density);
   if (!parsed.success) return;
 
-  await prisma.user.update({ where: { id: user.id }, data: { density: parsed.data } });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { density: parsed.data },
+  });
   revalidatePath("/settings");
 }
 
-export async function setLoadExternalImagesAction(value: boolean): Promise<void> {
+export async function setLoadExternalImagesAction(
+  value: boolean,
+): Promise<void> {
   const user = await requireUser();
-  await prisma.user.update({ where: { id: user.id }, data: { loadExternalImages: value } });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { loadExternalImages: value },
+  });
   revalidatePath("/settings");
 }
 
-export async function setDesktopNotificationsAction(value: boolean): Promise<void> {
+export async function setDesktopNotificationsAction(
+  value: boolean,
+): Promise<void> {
   const user = await requireUser();
-  await prisma.user.update({ where: { id: user.id }, data: { desktopNotifications: value } });
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { desktopNotifications: value },
+  });
   revalidatePath("/settings");
 }
 
@@ -81,11 +98,74 @@ export async function changePasswordAction(
     select: { passwordHash: true },
   });
 
-  const valid = await verifyPassword(parsed.data.currentPassword, record.passwordHash);
+  const valid = await verifyPassword(
+    parsed.data.currentPassword,
+    record.passwordHash,
+  );
   if (!valid) return { error: "Senha atual incorreta" };
 
   const passwordHash = await hashPassword(parsed.data.newPassword);
   await prisma.user.update({ where: { id: user.id }, data: { passwordHash } });
 
   return { success: true };
+}
+
+export type ActionState = { error?: string; success?: boolean };
+
+export async function addRegisteredEmailAction(
+  email: string,
+): Promise<ActionState> {
+  const user = await requireUser();
+
+  const parsed = addRegisteredEmailSchema.safeParse({ email });
+  if (!parsed.success) {
+    return { error: parsed.error.issues[0]?.message ?? "Endereço inválido" };
+  }
+
+  const target = parsed.data.email;
+  const currentEmails = user.registeredEmails || [];
+
+  if (target === user.email.toLowerCase() || currentEmails.includes(target)) {
+    return { error: "Este endereço já está cadastrado em sua conta." };
+  }
+
+  const updatedEmails = [...currentEmails, target];
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { registeredEmails: updatedEmails },
+  });
+
+  revalidatePath("/(app)", "layout");
+  return { success: true };
+}
+
+export async function removeRegisteredEmailAction(
+  email: string,
+): Promise<ActionState> {
+  const user = await requireUser();
+
+  const target = email.trim().toLowerCase();
+  const currentEmails = user.registeredEmails || [];
+
+  const updatedEmails = currentEmails.filter((e) => e !== target);
+
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { registeredEmails: updatedEmails },
+  });
+
+  revalidatePath("/(app)", "layout");
+  return { success: true };
+}
+
+export async function setReceiveUnregisteredEmailsAction(
+  value: boolean,
+): Promise<void> {
+  const user = await requireUser();
+  await prisma.user.update({
+    where: { id: user.id },
+    data: { receiveUnregisteredEmails: value },
+  });
+  revalidatePath("/(app)", "layout");
 }

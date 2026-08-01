@@ -2,6 +2,9 @@ import { Suspense } from "react";
 import Link from "next/link";
 import { Inbox as InboxIcon, SearchX, SlidersHorizontal } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth/session";
+import { buildUserEmailScope } from "@/lib/user-emails";
+import { Prisma } from "@/lib/generated/prisma/client/client";
 import {
   buildEmailWhere,
   EMAIL_LIST_SELECT,
@@ -31,12 +34,14 @@ const INBOX_SCOPE = {
 };
 
 async function InboxFilterChipsSection({
-  params,
+  userScope,
 }: {
-  params: InboxSearchParams;
+  userScope: Prisma.EmailWhereInput;
 }) {
   const [unreadCount, labels] = await Promise.all([
-    prisma.email.count({ where: { ...INBOX_SCOPE, read: false } }),
+    prisma.email.count({
+      where: { ...INBOX_SCOPE, read: false, AND: [userScope] },
+    }),
     getLabels(),
   ]);
 
@@ -45,10 +50,12 @@ async function InboxFilterChipsSection({
 
 async function InboxEmailListSection({
   params,
+  userScope,
 }: {
   params: InboxSearchParams;
+  userScope: Prisma.EmailWhereInput;
 }) {
-  const where = buildEmailWhere(INBOX_SCOPE, params);
+  const where = buildEmailWhere(INBOX_SCOPE, params, userScope);
   const emails = await prisma.email.findMany({
     where,
     orderBy: { receivedAt: "desc" },
@@ -117,7 +124,8 @@ export default async function InboxPage({
 }: {
   searchParams: Promise<InboxSearchParams>;
 }) {
-  const params = await searchParams;
+  const [user, params] = await Promise.all([requireUser(), searchParams]);
+  const userScope = await buildUserEmailScope(user);
 
   return (
     <div className="flex flex-1 flex-col h-full overflow-hidden">
@@ -142,13 +150,13 @@ export default async function InboxPage({
             <div className="h-8 w-64 animate-pulse rounded-full bg-frame" />
           }
         >
-          <InboxFilterChipsSection params={params} />
+          <InboxFilterChipsSection userScope={userScope} />
         </Suspense>
       </div>
 
       <div className="flex-1 overflow-y-auto px-5 py-5 md:px-7 min-h-0">
         <Suspense fallback={<ListSkeleton />}>
-          <InboxEmailListSection params={params} />
+          <InboxEmailListSection params={params} userScope={userScope} />
         </Suspense>
       </div>
     </div>

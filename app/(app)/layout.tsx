@@ -5,19 +5,16 @@ import { Sidebar } from "@/components/layout/Sidebar";
 
 export const dynamic = "force-dynamic";
 
-async function loadSidebarData() {
-  const [counts, labels] = await Promise.all([getSidebarCounts(), getLabels()]);
-
-  return { counts, labels };
-}
-
 export default async function AppLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
   const user = await requireUser();
-  const { counts, labels } = await loadSidebarData();
+  const [counts, labels] = await Promise.all([
+    getSidebarCounts(user),
+    getLabels(),
+  ]);
 
   return (
     <AppProviders>

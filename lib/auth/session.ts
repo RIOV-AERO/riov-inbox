@@ -16,6 +16,8 @@ export interface CurrentUser {
   loadExternalImages: boolean;
   desktopNotifications: boolean;
   signature: string | null;
+  registeredEmails: string[];
+  receiveUnregisteredEmails: boolean;
 }
 
 /** Creates a DB-backed session for `userId` and sets the signed JWT cookie. */
@@ -82,6 +84,8 @@ export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
           loadExternalImages: true,
           desktopNotifications: true,
           signature: true,
+          registeredEmails: true,
+          receiveUnregisteredEmails: true,
         },
       },
     },

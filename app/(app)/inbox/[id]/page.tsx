@@ -2,6 +2,8 @@ import { notFound } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { FileCode2, Paperclip } from "lucide-react";
 import { prisma } from "@/lib/prisma";
+import { requireUser } from "@/lib/auth/session";
+import { buildUserEmailScope } from "@/lib/user-emails";
 import {
   parseSender,
   initialFor,
@@ -21,7 +23,7 @@ export default async function EmailDetailPage({
 }: {
   params: Promise<{ id: string }>;
 }) {
-  const { id } = await params;
+  const [user, { id }] = await Promise.all([requireUser(), params]);
 
   const email = await prisma.email.findUnique({
     where: { id },
@@ -34,6 +36,15 @@ export default async function EmailDetailPage({
   });
 
   if (!email) notFound();
+
+  if (email.direction === "INBOUND") {
+    const userScope = await buildUserEmailScope(user);
+    const authorized = await prisma.email.findFirst({
+      where: { id, AND: [userScope] },
+      select: { id: true },
+    });
+    if (!authorized) notFound();
+  }
 
   if (!email.read && email.direction === "INBOUND") {
     // Non-blocking write so page rendering is instant

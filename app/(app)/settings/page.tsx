@@ -4,9 +4,11 @@ import { ProfileForm } from "./_components/ProfileForm";
 import { PasswordForm } from "./_components/PasswordForm";
 import { DensityControl } from "./_components/DensityControl";
 import { SettingToggle } from "./_components/SettingToggle";
+import { RegisteredEmailsControl } from "./_components/RegisteredEmailsControl";
 import {
   setLoadExternalImagesAction,
   setDesktopNotificationsAction,
+  setReceiveUnregisteredEmailsAction,
 } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -54,6 +56,33 @@ export default async function SettingsPage() {
             Senha
           </div>
           <PasswordForm />
+        </section>
+
+        <section className="flex flex-col gap-1">
+          <div className="mb-2 text-[11px] font-semibold tracking-wider text-ink-muted uppercase">
+            E-mails e Visibilidade
+          </div>
+          <div className="flex flex-col gap-2.5 border-b border-border-faint py-3.5">
+            <div className="flex flex-col gap-0.5">
+              <div className="text-sm font-medium text-ink">
+                Endereços e setores adicionais
+              </div>
+              <div className="text-[12.5px] text-ink-muted">
+                Cadastre e-mails ou setores (ex: financeiro, vendas) para
+                receber e visualizar mensagens endereçadas a eles.
+              </div>
+            </div>
+            <RegisteredEmailsControl initialEmails={user.registeredEmails} />
+          </div>
+          <SettingRow
+            title="Receber e-mails não registrados"
+            description="Exibir e-mails recebidos em endereços genéricos ou incorretos que não pertencem a nenhum funcionário."
+          >
+            <SettingToggle
+              initialValue={user.receiveUnregisteredEmails}
+              onToggle={setReceiveUnregisteredEmailsAction}
+            />
+          </SettingRow>
         </section>
 
         <section className="flex flex-col gap-1">
