@@ -21,7 +21,7 @@ export default async function AppLayout({
 
   return (
     <AppProviders>
-      <div className="flex h-screen w-full overflow-hidden bg-page">
+      <div className="flex h-screen h-dvh w-full overflow-hidden bg-page">
         <Sidebar
           counts={counts}
           labels={labels}

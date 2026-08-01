@@ -8,20 +8,21 @@ interface HtmlEmailViewerProps {
 
 export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
-  const [height, setHeight] = useState<number>(500);
+  const [height, setHeight] = useState<number>(600);
 
   const preparedHtml = useMemo(() => {
     if (!html) return "";
 
-    const resetStylesAndBase = `
-      <base target="_blank">
+    const resetStyles = `
       <style id="riov-inbox-email-reset">
         html, body {
           margin: 0 !important;
           padding: 24px !important;
           height: auto !important;
           min-height: 100% !important;
-          overflow: visible !important;
+          max-height: none !important;
+          overflow-x: auto !important;
+          overflow-y: auto !important;
           font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
           word-break: break-word !important;
           overflow-wrap: break-word !important;
@@ -35,18 +36,26 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
           max-width: 100% !important;
         }
       </style>
+      <base target="_blank">
     `;
 
-    if (html.includes("<head>")) {
-      return html.replace("<head>", `<head>${resetStylesAndBase}`);
+    let result = html;
+
+    if (result.includes("</head>")) {
+      result = result.replace("</head>", `${resetStyles}</head>`);
+    } else if (result.includes("<head>")) {
+      result = result.replace("<head>", `<head>${resetStyles}`);
+    } else if (result.includes("<html")) {
+      result = result.replace(/<html[^>]*>/, `$&<head>${resetStyles}</head>`);
+    } else {
+      result = `<!DOCTYPE html><html><head>${resetStyles}</head><body>${result}</body></html>`;
     }
-    if (html.includes("<html")) {
-      return html.replace(
-        /<html[^>]*>/,
-        `$&<head>${resetStylesAndBase}</head>`,
-      );
+
+    if (result.includes("</body>")) {
+      result = result.replace("</body>", `${resetStyles}</body>`);
     }
-    return `<!DOCTYPE html><html><head>${resetStylesAndBase}</head><body>${html}</body></html>`;
+
+    return result;
   }, [html]);
 
   useEffect(() => {
@@ -59,23 +68,33 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
       try {
         const doc = iframe.contentDocument || iframe.contentWindow?.document;
         if (!doc) return;
+
         const body = doc.body;
         const docEl = doc.documentElement;
 
-        if (body || docEl) {
+        if (body && docEl) {
+          docEl.style.setProperty("overflow-y", "auto", "important");
+          docEl.style.setProperty("height", "auto", "important");
+          docEl.style.setProperty("max-height", "none", "important");
+          body.style.setProperty("overflow-y", "auto", "important");
+          body.style.setProperty("height", "auto", "important");
+          body.style.setProperty("max-height", "none", "important");
+
           const contentHeight = Math.max(
-            body?.scrollHeight ?? 0,
-            body?.offsetHeight ?? 0,
-            docEl?.clientHeight ?? 0,
-            docEl?.scrollHeight ?? 0,
-            docEl?.offsetHeight ?? 0,
+            body.scrollHeight,
+            body.offsetHeight,
+            body.clientHeight,
+            docEl.scrollHeight,
+            docEl.offsetHeight,
+            docEl.clientHeight,
           );
+
           if (contentHeight > 0) {
-            setHeight(contentHeight + 16);
+            setHeight(contentHeight + 24);
           }
         }
       } catch {
-        // Fallback to default height if cross-origin or measurement issue
+        // Fallback if cross-origin or measurement issue occurs
       }
     };
 
@@ -90,6 +109,9 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
               updateHeight();
             });
             resizeObserver.observe(doc.body);
+            if (doc.documentElement) {
+              resizeObserver.observe(doc.documentElement);
+            }
           }
 
           const images = doc.querySelectorAll("img");
@@ -104,10 +126,9 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
     };
 
     iframe.addEventListener("load", handleLoad);
-
     updateHeight();
 
-    const timeouts = [100, 300, 600, 1200, 2500].map((delay) =>
+    const timeouts = [50, 150, 300, 600, 1200, 2500].map((delay) =>
       setTimeout(updateHeight, delay),
     );
 
@@ -126,8 +147,8 @@ export function HtmlEmailViewer({ html }: HtmlEmailViewerProps) {
       srcDoc={preparedHtml}
       sandbox="allow-same-origin allow-popups allow-popups-to-escape-sandbox"
       title="Conteúdo do e-mail"
-      className="w-full bg-white transition-[height] duration-150 ease-out border-0"
-      style={{ height: `${height}px`, minHeight: "300px" }}
+      className="w-full bg-white border-0 overflow-y-auto min-h-[350px]"
+      style={{ height: `${height}px` }}
     />
   );
 }

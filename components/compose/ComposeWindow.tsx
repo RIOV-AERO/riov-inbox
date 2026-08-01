@@ -130,7 +130,7 @@ function ComposeForm({
   }
 
   return (
-    <div className="pointer-events-auto flex w-[min(560px,calc(100vw-2rem))] flex-col overflow-hidden rounded-t-riov-xl border border-border-strong bg-surface shadow-riov-float sm:max-h-[min(680px,calc(100vh-2rem))]">
+    <div className="pointer-events-auto flex w-[min(560px,calc(100vw-2rem))] flex-col overflow-hidden rounded-t-riov-xl border border-border-strong bg-surface shadow-riov-float max-h-[min(680px,calc(100dvh-2rem))]">
       <div className="flex items-center gap-2.5 bg-ink px-4.5 py-3.5 text-white">
         <span className="flex-1 truncate text-sm font-semibold">
           {draft.subject || "Nova mensagem"}
