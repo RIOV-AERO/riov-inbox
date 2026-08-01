@@ -10,6 +10,7 @@ import {
   addRegisteredEmailSchema,
 } from "@/lib/validations/settings";
 import { hashPassword, verifyPassword } from "@/lib/auth/password";
+import { isOtherEmployeePrivateEmail } from "@/lib/user-emails";
 
 export type ProfileState = { error?: string; success?: boolean };
 
@@ -127,6 +128,17 @@ export async function addRegisteredEmailAction(
 
   if (target === user.email.toLowerCase() || currentEmails.includes(target)) {
     return { error: "Este endereço já está cadastrado em sua conta." };
+  }
+
+  const { isPrivate, matchedEmail } = await isOtherEmployeePrivateEmail(
+    target,
+    user.email,
+  );
+
+  if (isPrivate) {
+    return {
+      error: `Este endereço pertence ao e-mail privado de outro funcionário (${matchedEmail}).`,
+    };
   }
 
   const updatedEmails = [...currentEmails, target];

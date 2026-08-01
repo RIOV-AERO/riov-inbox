@@ -69,7 +69,9 @@ export async function isOtherEmployeePrivateEmail(
  */
 export const buildUserEmailScope = cache(
   async (user: CurrentUser): Promise<Prisma.EmailWhereInput> => {
-    // 1. Collect all DB user emails
+    const cleanUserEmail = user.email.trim().toLowerCase();
+
+    // 1. Collect all DB user emails and environment employee emails
     const dbUsers = await prisma.user.findMany({ select: { email: true } });
     const allEmployeeEmails = Array.from(
       new Set([
@@ -78,31 +80,29 @@ export const buildUserEmailScope = cache(
       ]),
     );
 
-    // 2. User's allowed targets
-    const userAddresses = [user.email, ...(user.registeredEmails || [])];
+    // 2. Other employees' private targets (strictly all employee emails except current user's email)
+    const otherEmployeeEmails = allEmployeeEmails.filter(
+      (e) => e !== cleanUserEmail,
+    );
+    const otherEmployeeTargets = Array.from(
+      new Set(otherEmployeeEmails.flatMap((addr) => extractTokens(addr))),
+    );
+    const otherEmployeeTargetSet = new Set(otherEmployeeTargets);
+
+    // 3. User's allowed targets: user's primary email + registeredEmails filtered to exclude other employees' private targets
+    const safeRegisteredEmails = (user.registeredEmails || []).filter(
+      (addr) => {
+        const tokens = extractTokens(addr);
+        return !tokens.some((t) => otherEmployeeTargetSet.has(t));
+      },
+    );
+
+    const userAddresses = [user.email, ...safeRegisteredEmails];
     const userTargets = Array.from(
       new Set(userAddresses.flatMap((addr) => extractTokens(addr))),
     );
 
-    // 3. Other employees' private targets (excluding user's allowed targets)
-    const userAddressSet = new Set(
-      userAddresses.map((a) => a.trim().toLowerCase()),
-    );
-    const userTargetSet = new Set(userTargets);
-
-    const otherEmployeeEmails = allEmployeeEmails.filter(
-      (e) => !userAddressSet.has(e),
-    );
-
-    const otherEmployeeTargets = Array.from(
-      new Set(
-        otherEmployeeEmails
-          .flatMap((addr) => extractTokens(addr))
-          .filter((t) => !userTargetSet.has(t)),
-      ),
-    );
-
-    // 4. Construct direct match conditions for user's targets
+    // 4. Construct direct match conditions for user's allowed targets
     const directMatchConditions: Prisma.EmailWhereInput[] = userTargets.map(
       (target) => ({
         to: { contains: target, mode: "insensitive" as const },
