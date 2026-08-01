@@ -119,7 +119,7 @@ export const buildUserEmailScope = cache(
     // 5. Unregistered / catch-all condition
     const unregisteredCondition: Prisma.EmailWhereInput = {
       AND: otherEmployeeTargets.map((target) => ({
-        to: { not: { contains: target, mode: "insensitive" as const } },
+        NOT: { to: { contains: target, mode: "insensitive" as const } },
       })),
     };
 
