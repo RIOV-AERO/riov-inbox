@@ -1,4 +1,5 @@
-export const FROM_ADDRESS = process.env.FROM_EMAIL_ADDRESS || "inbox@riov.com.br";
+export const FROM_ADDRESS =
+  process.env.FROM_EMAIL_ADDRESS || "inbox@riov.com.br";
 
 export interface ResendAttachmentInput {
   filename: string;
@@ -6,6 +7,7 @@ export interface ResendAttachmentInput {
 }
 
 export interface SendResendEmailInput {
+  from?: string;
   to: string[];
   cc?: string[];
   subject: string;
@@ -25,6 +27,8 @@ export async function sendResendEmail(
   const apiKey = process.env.RESEND_API_KEY;
   if (!apiKey) return { ok: false, error: "RESEND_API_KEY não configurada" };
 
+  const senderAddress = input.from || FROM_ADDRESS;
+
   const res = await fetch("https://api.resend.com/emails", {
     method: "POST",
     headers: {
@@ -32,7 +36,7 @@ export async function sendResendEmail(
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
-      from: FROM_ADDRESS,
+      from: senderAddress,
       to: input.to,
       cc: input.cc?.length ? input.cc : undefined,
       subject: input.subject,

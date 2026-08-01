@@ -14,7 +14,11 @@ import { FROM_ADDRESS } from "@/lib/resend";
 
 const initialState: SendComposeState = {};
 
-export function ComposeWindow() {
+export function ComposeWindow({
+  user,
+}: {
+  user?: { email: string; registeredEmails?: string[] };
+}) {
   const { status, draft, key, minimize, restore, close } = useCompose();
 
   if (status === "closed") return null;
@@ -31,6 +35,7 @@ export function ComposeWindow() {
   return (
     <ComposeForm
       key={key}
+      user={user}
       draft={draft}
       onMinimize={minimize}
       onClose={close}
@@ -72,10 +77,12 @@ function MinimizedBar({
 }
 
 function ComposeForm({
+  user,
   draft,
   onMinimize,
   onClose,
 }: {
+  user?: { email: string; registeredEmails?: string[] };
   draft: {
     to?: string;
     subject?: string;
@@ -174,7 +181,21 @@ function ComposeForm({
             <span className="w-14 shrink-0 text-[12.5px] font-semibold text-ink-muted">
               De
             </span>
-            <span className="flex-1 text-sm text-ink">{FROM_ADDRESS}</span>
+            <input
+              name="from"
+              type="text"
+              list="compose-from-suggestions"
+              defaultValue={user?.email || FROM_ADDRESS}
+              placeholder="seu-email@riov.com.br ou setor"
+              className="flex-1 bg-transparent text-sm text-ink outline-none placeholder:text-ink-faint"
+            />
+            <datalist id="compose-from-suggestions">
+              {user?.email && <option value={user.email} />}
+              {user?.registeredEmails?.map((email) => (
+                <option key={email} value={email} />
+              ))}
+              {FROM_ADDRESS !== user?.email && <option value={FROM_ADDRESS} />}
+            </datalist>
           </div>
           <div className="flex items-center gap-3 border-b border-border-subtle py-3.5">
             <span className="w-14 shrink-0 text-[12.5px] font-semibold text-ink-muted">

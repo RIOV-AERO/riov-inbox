@@ -4,7 +4,12 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/prisma";
 import { requireUser } from "@/lib/auth/session";
 import { composeSchema } from "@/lib/validations/compose";
-import { sendResendEmail, type ResendAttachmentInput } from "@/lib/resend";
+import {
+  sendResendEmail,
+  FROM_ADDRESS,
+  type ResendAttachmentInput,
+} from "@/lib/resend";
+import { isOtherEmployeePrivateEmail } from "@/lib/user-emails";
 
 export type SendComposeState = {
   error?: string;
@@ -21,6 +26,7 @@ export async function sendComposeAction(
   const user = await requireUser();
 
   const parsed = composeSchema.safeParse({
+    from: formData.get("from") ?? "",
     to: formData.get("to"),
     cc: formData.get("cc") ?? "",
     subject: formData.get("subject"),
@@ -32,7 +38,28 @@ export async function sendComposeAction(
     return { error: parsed.error.issues[0]?.message ?? "Dados inválidos" };
   }
 
-  const { to, cc, subject, body } = parsed.data;
+  const { from: rawFrom, to, cc, subject, body } = parsed.data;
+
+  const defaultDomain = FROM_ADDRESS.includes("@")
+    ? FROM_ADDRESS.split("@")[1]
+    : "riov.com.br";
+
+  let targetFrom = (rawFrom || "").trim() || user.email;
+
+  if (!targetFrom.includes("@") && !targetFrom.includes("<")) {
+    targetFrom = `${targetFrom}@${defaultDomain}`;
+  }
+
+  const { isPrivate, matchedEmail } = await isOtherEmployeePrivateEmail(
+    targetFrom,
+    user.email,
+  );
+
+  if (isPrivate) {
+    return {
+      error: `Você não tem permissão para enviar e-mails em nome do e-mail privado de outro funcionário (${matchedEmail}).`,
+    };
+  }
 
   const files = formData
     .getAll("attachments")
@@ -62,6 +89,7 @@ export async function sendComposeAction(
   const fullBody = user.signature ? `${body}\n\n${user.signature}` : body;
 
   const result = await sendResendEmail({
+    from: targetFrom,
     to,
     cc,
     subject,
@@ -77,7 +105,7 @@ export async function sendComposeAction(
     data: {
       messageId: result.id,
       direction: "OUTBOUND",
-      from: user.email,
+      from: targetFrom,
       to: [...to, ...(cc ?? [])].join(", "),
       subject,
       text: fullBody,

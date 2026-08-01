@@ -24,6 +24,41 @@ function extractTokens(address: string): string[] {
 }
 
 /**
+ * Checks if a candidate "From" address corresponds to another employee's private email.
+ */
+export async function isOtherEmployeePrivateEmail(
+  rawFromAddress: string,
+  currentUserEmail: string,
+): Promise<{ isPrivate: boolean; matchedEmail?: string }> {
+  const cleanUserEmail = currentUserEmail.trim().toLowerCase();
+
+  const match = rawFromAddress.match(/<([^>]+)>/);
+  const rawTarget = match ? match[1] : rawFromAddress;
+  const addressToTest = rawTarget.trim().toLowerCase();
+
+  const testTokens = extractTokens(addressToTest);
+
+  const dbUsers = await prisma.user.findMany({ select: { email: true } });
+  const otherEmployeeEmails = Array.from(
+    new Set([
+      ...getEmployeeEmailsFromEnv(),
+      ...dbUsers.map((u) => u.email.trim().toLowerCase()),
+    ]),
+  ).filter((e) => e !== cleanUserEmail);
+
+  for (const empEmail of otherEmployeeEmails) {
+    const empTokens = extractTokens(empEmail);
+    for (const token of testTokens) {
+      if (empTokens.includes(token)) {
+        return { isPrivate: true, matchedEmail: empEmail };
+      }
+    }
+  }
+
+  return { isPrivate: false };
+}
+
+/**
  * Builds the Prisma EmailWhereInput visibility scope for the given user.
  * Memoized per request via React cache.
  *

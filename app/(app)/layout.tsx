@@ -17,7 +17,9 @@ export default async function AppLayout({
   ]);
 
   return (
-    <AppProviders>
+    <AppProviders
+      user={{ email: user.email, registeredEmails: user.registeredEmails }}
+    >
       <div className="flex h-screen h-dvh w-full overflow-hidden bg-page">
         <Sidebar
           counts={counts}

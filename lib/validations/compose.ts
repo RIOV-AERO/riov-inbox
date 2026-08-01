@@ -17,6 +17,7 @@ const emailListField = z
   );
 
 export const composeSchema = z.object({
+  from: z.string().trim().optional(),
   to: emailListField,
   cc: z
     .string()
