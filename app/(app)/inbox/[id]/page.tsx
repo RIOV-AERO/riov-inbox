@@ -12,6 +12,7 @@ import { avatarColorsFor } from "@/lib/avatar";
 import { EmailActionsBar } from "@/components/inbox/EmailActionsBar";
 import { AttachmentCard } from "@/components/inbox/AttachmentCard";
 import { ReplyForwardBar } from "@/components/inbox/ReplyForwardBar";
+import { HtmlEmailViewer } from "@/components/inbox/HtmlEmailViewer";
 
 export const dynamic = "force-dynamic";
 
@@ -126,12 +127,7 @@ export default async function EmailDetailPage({
                 Conteúdo HTML · exibido em sandbox
               </span>
             </div>
-            <iframe
-              srcDoc={email.html}
-              sandbox=""
-              title="Conteúdo do e-mail"
-              className="h-140 w-full bg-white"
-            />
+            <HtmlEmailViewer html={email.html} />
           </div>
         ) : email.text ? (
           <div className="rounded-riov-xl border border-border bg-surface p-7">

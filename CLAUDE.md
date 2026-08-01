@@ -110,7 +110,7 @@ pnpm user:create <email> <password> <name>  # provision a login
 
 - `url` is NOT in the `datasource` block of `schema.prisma` — it lives in `prisma.config.ts`.
 - Generator must be `provider = "prisma-client"` (not `prisma-client-js`) with an explicit `output`.
-- `PrismaClient` must be instantiated with `new PrismaPg({ connectionString })` adapter — no Rust engine.
+- `PrismaClient` must be instantiated with `new PrismaPg(pool)` adapter (using a globally cached `pg.Pool` with connection pooling settings like `max: 5`) — no Rust engine.
 - Import from `./generated/prisma/client/client`, not `@prisma/client`.
 
 ## Webhook (Resend)
@@ -157,13 +157,15 @@ Warm, light theme (this superseded the earlier dark `rio-*` palette — see `app
 
 ## Environment Variables
 
-| Variable                | Required    | Description                                                                                               |
-| ----------------------- | ----------- | --------------------------------------------------------------------------------------------------------- |
-| `DATABASE_URL`          | ✓           | Prisma Postgres connection string                                                                         |
-| `AUTH_SECRET`           | ✓           | HS256 signing secret for session JWTs (`openssl rand -base64 32`). Rotating it invalidates every session. |
-| `RESEND_API_KEY`        | ✓           | Resend API key, used for both inbound retrieval and outbound send                                         |
-| `RESEND_WEBHOOK_SECRET` | recommended | svix signing secret (`whsec_...`) from Resend dashboard                                                   |
-| `FROM_EMAIL_ADDRESS`    | recommended | outgoing "From" address (defaults to `inbox@riov.com.br`)                                                 |
+| Variable                         | Required    | Description                                                                                               |
+| -------------------------------- | ----------- | --------------------------------------------------------------------------------------------------------- |
+| `DATABASE_URL`                   | ✓           | Prisma Postgres connection string                                                                         |
+| `AUTH_SECRET`                    | ✓           | HS256 signing secret for session JWTs (`openssl rand -base64 32`). Rotating it invalidates every session. |
+| `RESEND_API_KEY`                 | ✓           | Resend API key, used for both inbound retrieval and outbound send                                         |
+| `RESEND_WEBHOOK_SECRET`          | recommended | svix signing secret (`whsec_...`) from Resend dashboard                                                   |
+| `FROM_EMAIL_ADDRESS`             | recommended | outgoing "From" address (defaults to `inbox@riov.com.br`)                                                 |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | recommended | Cloudflare Turnstile public site key for anti-bot / DDoS protection widget in login form                  |
+| `TURNSTILE_SECRET_KEY`           | recommended | Cloudflare Turnstile private secret key for server-side siteverify API token validation                   |
 
 ## How to Run
 

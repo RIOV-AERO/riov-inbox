@@ -1,12 +1,22 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useRef, useEffect } from "react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { loginAction, type LoginState } from "../actions";
 
 const initial: LoginState = {};
+const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY;
 
 export default function LoginForm() {
   const [state, action, pending] = useActionState(loginAction, initial);
+  const turnstileRef = useRef<TurnstileInstance>(null);
+
+  // Reset Turnstile challenge token on login failure so the user gets a fresh challenge
+  useEffect(() => {
+    if (state.error && turnstileRef.current) {
+      turnstileRef.current.reset();
+    }
+  }, [state.error]);
 
   return (
     <form action={action} className="flex flex-col gap-4">
@@ -44,6 +54,20 @@ export default function LoginForm() {
           />
         </label>
       </div>
+
+      {siteKey ? (
+        <div className="flex justify-center py-1">
+          <Turnstile
+            ref={turnstileRef}
+            siteKey={siteKey}
+            options={{
+              theme: "light",
+              responseField: true,
+              responseFieldName: "cf-turnstile-response",
+            }}
+          />
+        </div>
+      ) : null}
 
       <button
         type="submit"
