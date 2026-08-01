@@ -110,7 +110,7 @@ pnpm user:create <email> <password> <name>  # provision a login
 
 - `url` is NOT in the `datasource` block of `schema.prisma` — it lives in `prisma.config.ts`.
 - Generator must be `provider = "prisma-client"` (not `prisma-client-js`) with an explicit `output`.
-- `PrismaClient` must be instantiated with `new PrismaPg(pool)` adapter (using a globally cached `pg.Pool` with connection pooling settings like `max: 5`) — no Rust engine.
+- `PrismaClient` must be instantiated with `new PrismaPg(pool)` adapter (using a globally cached `pg.Pool` with connection pooling settings like `max: 2` to prevent connection exhaustion) — no Rust engine.
 - Import from `./generated/prisma/client/client`, not `@prisma/client`.
 
 ## Webhook (Resend)
